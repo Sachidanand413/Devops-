@@ -1,0 +1,57 @@
+
+# Installing Ansible on Master
+- sudo apt-get update
+- sudo apt install software-properties-common
+- sudo apt-add-repository ppa:ansible/ansible
+- sudo apt update
+- sudo apt install ansible
+
+On hosts:-
+- sudo apt-get update
+- sudo apt-get install python 
+
+# Configure SSH access to Ansible Host
+keyless SSH
+- /.ssh$ sudo ssh ubuntu@<ip-Slave>  //access denied...// make below settings
+- cd .ssh
+- ssh$ ls
+- authorized_keys   known_hosts
+Now get into the known_hosts file
+- .ssh$ cat known_hosts
+you get the ssh encrypted key file
+- .ssh$ cat authorized_keys
+You get the pem file with which you get connected to the instance. 
+On Master: .ssh$ ssh-keygen
+just hit enter repeatedly..
+- .ssh$ ls
+authorized_keys  id_rsa  id_rsa.pub  known_hosts
+- /.ssh$ cat id_rsa.pud 
+ssh-rsa .................                                                    -  -- 
+..........                                                                        !
+// Now copy the above key on the slave in order to connect with the master        !
+                                                                                  !
+On-Slave: sudo nano .ssh/authorized_keys                                          !    
+                                                                                  ! 
+[servers]                                                                         !  
+host1 ansible_ssh_host=203.0.113.1 ssh-rsa .................                ----  !
+..........                         
+
+# Setting up Ansible Host and testing connection:-
+**************************************************************************
+On-Master for the slave status using its ip
+- /.ssh$ ssh ubuntu@<ip-slave>
+You will get loged into the slave instance..
+ubuntu@<ip-Slave>exit
+You get into original instance
+- /.ssh$ sudo nano /etc/ansible/hosts
+Get into the file
+[production]  //Group name
+slave1 ansible_ssh_host=<ip-slave> // Host name1
+slave2 ansible_ssh_host=<ip-anotherslave> //Host name2
+*********************************************************************
+...
+- hosts: apache
+  sudo: yes
+  tasks:
+    - name: install apache2
+    apt: name=apache2 update_cache=yes state=latest 
