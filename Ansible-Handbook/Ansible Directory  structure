@@ -1,0 +1,89 @@
+You can create as many as users with root previleges to isolate each server admin separately
+~$ useradd <any-name>
+~$ passwd <any-name>
+create password 
+
+Even you can make the separate directory from that user previlages 
+~$ cd /etc/ansible/
+~$ ls
+[ansadmin@ip-172-31-20-26 ansible]$ ls
+ansible.cfg  hosts  roles
+
+[ansadmin@ip-172-31-20-26 ~]$ mkdir my_working_dir
+[ansadmin@ip-172-31-20-26 ~]$ cd my_working_dir
+[ansadmin@ip-172-31-20-26 my_working_dir]$ cp -rpP /etc/ansible/*
+cp: cannot create regular file '/etc/ansible/roles/ansible.cfg': Permission denied
+cp: cannot create regular file '/etc/ansible/roles/hosts': Permission denied
+[ansadmin@ip-172-31-20-26 my_working_dir]$ cp -rpP /etc/ansible/*  .
+[ansadmin@ip-172-31-20-26 my_working_dir]$ ls -lrt
+total 24
+drwxr-xr-x. 2 ansadmin ansadmin     6 Oct  7 18:06 roles
+-rw-r--r--. 1 ansadmin ansadmin 19985 Oct  7 18:06 ansible.cfg
+-rw-r--r--. 1 ansadmin ansadmin  1048 Oct 25 09:04 hosts
+
+You can change the host name and save that to the inventory in the ansible.cfg file
+$ ansible all -m ping -i <inventory-name>
+--------------------------------------------------------------------------------------
+- [ec2-user@ip-172-31-20-26 ~]$ sudo su ansadmin
+- [ansadmin@ip-172-31-20-26 ec2-user]$ cd
+- [ansadmin@ip-172-31-20-26 ~]$ ls
+my_working_dir
+- [ansadmin@ip-172-31-20-26 ~]$ cd my_working_dir
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ls -lrt
+total 24
+drwxr-xr-x. 2 ansadmin ansadmin     6 Oct  7 18:06 roles
+-rw-r--r--. 1 ansadmin ansadmin 19985 Oct  7 18:06 ansible.cfg
+-rw-rw-r--. 1 ansadmin ansadmin    27 Oct 25 10:14 myinventory
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ rm myinventory
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ vi myhost
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ vi ansible.cfg
+*********************************************************
+# config file for ansible -- https://ansible.com/
+# ===============================================
+
+# nearly all parameters can be overridden in ansible-playbook
+# or with command line flags. ansible will read ANSIBLE_CONFIG,
+# ansible.cfg in the current working directory, .ansible.cfg in
+# the home directory or /etc/ansible/ansible.cfg, whichever it
+# finds first
+
+[defaults]
+
+# some basic default values...
+inventory       = ./myhost
+#inventory      = /etc/ansible/hosts
+#library        = /usr/share/my_modules/
+#module_utils   = /usr/share/my_module_utils/...............
+
+
+vim editor 
+- i for editting of insert
+- wq to save and exti
+- q! exit forcely
+******************************************************************
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible all -m ping -i myhost
+
+[WARNING]: Platform linux on host 3.17.145.86 is using the discovered Python interpreter at /usr/bin/python, but future installation of
+another Python interpreter could change this. See https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+for more information.
+3.17.145.86 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+[WARNING]: Platform linux on host 18.220.222.184 is using the discovered Python interpreter at /usr/bin/python, but future installation
+of another Python interpreter could change this. See
+https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html for more information.
+18.220.222.184 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+
+
+
+
