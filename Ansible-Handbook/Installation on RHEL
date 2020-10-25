@@ -43,7 +43,7 @@ Now get into the ansadmin user for the furher process.
 - ssh]$ ssh <ip-address>
 
 ################Ex looks like:-###################
-[ansadmin@ip-172-31-20-26 .ssh]$ ssh-copy-id 3.17.145.86
+- [ansadmin@ip-172-31-20-26 .ssh]$ ssh-copy-id 3.17.145.86
 /bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/home/ansadmin/.ssh/id_rsa.pub"
 The authenticity of host '3.17.145.86 (3.17.145.86)' can't be established.
 ECDSA key fingerprint is SHA256:x1HPzGvAb/bRU4okWCpmHUrwhSSDskmZLtngOwuowDY.
@@ -57,7 +57,6 @@ Number of key(s) added: 1
 Now try logging into the machine, with:   "ssh '3.17.145.86'"
 and check to make sure that only the key(s) you wanted were added.
 
-[ansadmin@ip-172-31-20-26 .ssh]$ ssh ^C
 [ansadmin@ip-172-31-20-26 .ssh]$ ssh 3.17.145.86
 
        __|  __|_  )
@@ -65,5 +64,55 @@ and check to make sure that only the key(s) you wanted were added.
       ___|\___|___|
 
 https://aws.amazon.com/amazon-linux-ami/2018.03-release-notes/
+
+- $ ssh ansadmin@<ip-address>  // Even this is also used for the remote login purpose.// ssh username@hostname
+## CREATING THE INVETORY FILE IN ~$ cd /etc/ansible/ ~ by editing the host file with the connected host ip-s ~$ vi hosts ~ as exicuted show in below
+
+- [ec2-user@ip-172-31-20-26 ~]$ sudo su ansadmin
+- [ansadmin@ip-172-31-20-26 ec2-user]$ cd
+- [ansadmin@ip-172-31-20-26 ~]$ cd /etc/ansible/
+- [ansadmin@ip-172-31-20-26 ansible]$ ls
+ansible.cfg  hosts  roles
+- [ansadmin@ip-172-31-20-26 ansible]$ vi hosts
+- [ansadmin@ip-172-31-20-26 ansible]$ sudo vi hosts
+- [ansadmin@ip-172-31-20-26 ansible]$ cat hosts | head -20
+3.17.145.86
+18.220.222.184
+
+
+# This is the default ansible 'hosts' file.
+#
+# It should live in /etc/ansible/hosts
+#
+#   - Comments begin with the '#' character
+#   - Blank lines are ignored
+#   - Groups of hosts are delimited by [header] elements
+#   - You can enter hostnames or ip addresses
+#   - A hostname/ip can be a member of multiple groups
+
+# Ex 1: Ungrouped hosts, specify before any group headers.
+
+## green.example.com
+- [ansadmin@ip-172-31-20-26 ansible]$ ansible all -m ping
+
+[WARNING]: Platform linux on host 18.220.222.184 is using the discovered Python interpreter at /usr/bin/python, but future installation
+of another Python interpreter could change this. See
+https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html for more information.
+18.220.222.184 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"  //This host is saved in this location 
+    },
+    "changed": false,                                       // With nothing changed in this command 
+    "ping": "pong"                                          // ping replied by pong
+}
+[WARNING]: Platform linux on host 3.17.145.86 is using the discovered Python interpreter at /usr/bin/python, but future installation of
+another Python interpreter could change this. See https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+for more information.
+3.17.145.86 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
 
  
