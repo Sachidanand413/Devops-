@@ -1,0 +1,285 @@
+- [ansadmin@ip-172-31-20-26 ~]$ uptime
+ 08:01:40 up  4:00,  4 users,  load average: 0.00, 0.00, 0.00
+- [ansadmin@ip-172-31-20-26 ~]$ free -m
+              total        used        free      shared  buff/cache   available
+Mem:            815         188         312          17         314         485
+Swap:             0           0           0
+- [ansadmin@ip-172-31-20-26 ~]$ vi multi_task.sh
+- [ansadmin@ip-172-31-20-26 ~]$ sh multi_task.sh
+ 08:05:31 up  4:03,  4 users,  load average: 0.00, 0.00, 0.00
+              total        used        free      shared  buff/cache   available
+Mem:            815         191         309          17         314         482
+Swap:             0           0           0
+- [ansadmin@ip-172-31-20-26 ~]$ cd my_ansible_prod
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ls
+ansible.cfg  group-groups  hosts  roles
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ cat group-groups
+[web-server]
+3.129.44.195
+
+[db-server]
+18.216.124.110
+
+[db-sql]
+172.31.20.26
+
+
+[db:children]
+db-server
+db-sql
+--------------------------------------------------------------------------------------
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible db -m ping
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Platform linux on host 18.216.124.110 is using the discovered Python interpreter at /usr/bin/python, but future installation
+of another Python interpreter could change this. See
+https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html for more information.
+18.216.124.110 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+172.31.20.26 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible db -m shell -a "uptime"
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Platform linux on host 18.216.124.110 is using the discovered Python interpreter at /usr/bin/python, but future installation
+of another Python interpreter could change this. See
+https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html for more information.
+18.216.124.110 | CHANGED | rc=0 >>
+ 08:20:54 up  4:19,  1 user,  load average: 0.00, 0.00, 0.00
+172.31.20.26 | CHANGED | rc=0 >>
+ 08:20:54 up  4:19,  6 users,  load average: 0.00, 0.00, 0.00
+
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible db -m shell -a "free -m"
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Platform linux on host 18.216.124.110 is using the discovered Python interpreter at /usr/bin/python, but future installation
+of another Python interpreter could change this. See
+https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html for more information.
+18.216.124.110 | CHANGED | rc=0 >>
+             total       used       free     shared    buffers     cached
+Mem:           985        204        781          0         23        110
+-/+ buffers/cache:         70        915
+Swap:            0          0          0
+172.31.20.26 | CHANGED | rc=0 >>
+              total        used        free      shared  buff/cache   available
+Mem:            815         292         207          17         316         381
+Swap:             0           0           0
+
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible db:web-server -m shell -a "uptime"
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Platform linux on host 3.129.44.195 is using the discovered Python interpreter at /usr/bin/python, but future installation of
+another Python interpreter could change this. See https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+for more information.
+3.129.44.195 | CHANGED | rc=0 >>
+ 08:25:25 up  4:23,  1 user,  load average: 0.00, 0.00, 0.00
+[WARNING]: Platform linux on host 18.216.124.110 is using the discovered Python interpreter at /usr/bin/python, but future installation
+of another Python interpreter could change this. See
+https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html for more information.
+18.216.124.110 | CHANGED | rc=0 >>
+ 08:25:25 up  4:23,  1 user,  load average: 0.00, 0.00, 0.00
+172.31.20.26 | CHANGED | rc=0 >>
+ 08:25:25 up  4:23,  6 users,  load average: 0.32, 0.07, 0.02
+
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ vi prod_inven
+[web-server]
+3.138.244.21
+
+[db-server]
+18.216.124.110
+
+[db-sql]
+3.129.44.195
+
+
+[db:children]
+db-server
+db-sql
+~
+
+- [ansadmin@ip-172-31-20-26 ~]$ cd my_ansible_prod
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ls
+ansible.cfg  group-groups  hosts  prod_inven  roles
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible -i prod_inven all -m shell -a "uptime"
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Platform linux on host 18.216.124.110 is using the discovered Python interpreter at /usr/bin/python, but future installation
+of another Python interpreter could change this. See
+https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html for more information.
+18.216.124.110 | CHANGED | rc=0 >>
+ 09:42:08 up  5:40,  2 users,  load average: 0.00, 0.00, 0.00
+[WARNING]: Platform linux on host 3.129.44.195 is using the discovered Python interpreter at /usr/bin/python, but future installation of
+another Python interpreter could change this. See https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+for more information.
+3.129.44.195 | CHANGED | rc=0 >>
+ 09:42:08 up  5:40,  3 users,  load average: 0.00, 0.00, 0.00
+3.138.244.21 | CHANGED | rc=0 >>
+ 09:42:08 up  5:40,  9 users,  load average: 0.00, 0.01, 0.00
+
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible -i prod_inven web-server -m shell -a "uptime"
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+3.138.244.21 | CHANGED | rc=0 >>
+ 09:43:27 up  5:41,  9 users,  load average: 0.24, 0.05, 0.02
+[ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible -i prod_inven webserver:db -m shell -a "free -m"
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Could not match supplied host pattern, ignoring: webserver
+[WARNING]: Platform linux on host 3.129.44.195 is using the discovered Python interpreter at /usr/bin/python, but future installation of
+another Python interpreter could change this. See https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+for more information.
+3.129.44.195 | CHANGED | rc=0 >>
+             total       used       free     shared    buffers     cached
+Mem:           985        199        785          0         14        104
+-/+ buffers/cache:         80        904
+Swap:            0          0          0
+[WARNING]: Platform linux on host 18.216.124.110 is using the discovered Python interpreter at /usr/bin/python, but future installation
+of another Python interpreter could change this. See
+https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html for more information.
+18.216.124.110 | CHANGED | rc=0 >>
+             total       used       free     shared    buffers     cached
+Mem:           985        216        769          0         27        111
+-/+ buffers/cache:         77        907
+Swap:            0          0          0
+******************************************************************************************************************************************
+
+* ansible all -m ping 
+* ansible db:web-server -m ping 
+---------------------------------------------------------------------------------------------------
+* ansible db:db-sql -m shell -a "uptime"
+* ansible web-server:db -m shell -a "free -m
+---------------------------------------------------------------------------------------------------
+* ansible all -m ping -i invetory-name   // Where the inventory is not set default in ansible.cfg.
+* ansibel -i <inventory-name> -m shell -a "free -m"
+* ansible -i <inventory-name> -m shell -a "uptime"      //  shell and ping are the modules and some modules like shell has the arguments like "free -m", "uptime".
+
+* ANSIBLE AD-HOC COMMAND SYNTAX:-
+---------------------------------------------------------------------------------------------------------------------------------------
+******************** ansible [-i prod_inven]  server-name:group1:group2   -m module [-a argument_values]***************************
+----------------------------------------------------------------------------------------------------------------------------------------
+IF YOU WANT TO GET THE LIST OF ALL THE MODULES AND THEIR REPECTIVE COMMANDS:-
+
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible-doc -l
+a10_server                                                    Manage A10 Networks AX/SoftAX/Thunder/vThunder devices' server object
+a10_server_axapi3                                             Manage A10 Networks AX/SoftAX/Thunder/vThunder devices
+a10_service_group                                             Manage A10 Networks AX/SoftAX/Thunder/vThunder devices' service groups
+a10_virtual_server                                            Manage A10 Networks AX/SoftAX/Thunder/vThunder devices' virtual server...
+aci_aaa_user                                                  Manage AAA users (aaa:User)
+aci_aaa_user_certificate                                      Manage AAA user certificates (aaa:UserCert)
+aci_access_port_block_to_access_port                          Manage port blocks of Fabric interface policy leaf profile interface s...
+aci_access_port_to_interface_policy_leaf_profile              Manage Fabric interface policy leaf profile interface selectors (infra...
+aci_access_sub_port_block_to_access_port                      Manage sub port blocks of Fabric interface policy leaf profile interfa...
+aci_aep                                                       Manage attachable Access Entity Profile (AEP) objects (infra:AttEntity...
+aci_aep_to_domain                                             Bind AEPs to Physical or Virtual Domains (infra:RsDomP)
+....
+....
+....
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible-doc -l | grep shell           //  Search by each module 
+shell                                                         Execute shell commands on targets
+vmware_vm_shell                                               Run commands in a VMware guest operating system
+win_shell                                                     Execute shell commands on target hosts
+
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible-doc -l | grep ping
+fortios_firewall_shaping_policy                               Configure shaping policies in Fortinet's FortiOS and FortiGate
+fortios_firewall_shaping_profile                              Configure shaping profiles in Fortinet's FortiOS and FortiGate
+fortios_switch_controller_igmp_snooping                       Configure FortiSwitch IGMP snooping global settings in Fortinet's Fort...
+fortios_system_geoip_override                                 Configure geographical location mapping for IP address(es) to override...
+fortios_system_switch_interface                               Configure software switch interfaces by grouping physical and WiFi int...
+ibm_sa_vol_map                                                Handles volume mapping on IBM Spectrum Accelerate Family storage syste...
+
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible-doc shell
+> SHELL    (/usr/lib/python3.6/site-packages/ansible/modules/commands/shell.py)
+
+        The `shell' module takes the command name followed by a list of space-delimited arguments. Either a
+        free form command or `cmd' parameter is required, see the examples. It is almost exactly like the
+        [command] module but runs the command through a shell (`/bin/sh') on the remote node. For Windows
+        targets, use the [win_shell] module instead.
+
+  * This module is maintained by The Ansible Core Team
+  * note: This module has a corresponding action plugin.
+OPTIONS (= is mandatory):
+- chdir
+        Change into this directory before running the command.
+        [Default: (null)]
+        type: path
+        version_added: 0.6
+- cmd
+        The command to run followed by optional arguments.
+        [Default: (null)]
+        type: str
+- creates
+        A filename, when it already exists, this step will *not* be run.
+        [Default: (null)]
+        type: path
+- executable
+        Change the shell used to execute the command.
+        This expects an absolute path to the executable.
+        [Default: (null)]
+        type: path
+        version_added: 0.9
+- free_form
+        The shell module takes a free form command to run, as a string.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ vi test.yml
+--------------------------------------------------------------------------
+---
+ - name: Finding uptime and free ram
+   hosts: all
+   tasks:
+   - name: Finding uptime
+     shell: uptime
+     register: up_time
+   - debug:
+       var: up_time.stdout_lines
+   - name: Finding RAM info
+     shell: free -m
+     register: ram_info
+   - debug:
+       var: ram_info.stdout_lines
+-------------------------------------------------------------------------------
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible-playbook test.yml
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+
+PLAY [Finding uptime and free ram] ******************************************************************************************************
+
+TASK [Gathering Facts] ******************************************************************************************************************
+ok: [3.138.244.21]
+
+TASK [Finding uptime] *******************************************************************************************************************
+changed: [3.138.244.21]
+
+TASK [debug] ****************************************************************************************************************************
+ok: [3.138.244.21] => {
+    "up_time.stdout_lines": [
+        " 10:36:38 up  6:35,  7 users,  load average: 0.32, 0.07, 0.02"
+    ]
+}
+
+TASK [Finding RAM info] *****************************************************************************************************************
+changed: [3.138.244.21]
+
+TASK [debug] ****************************************************************************************************************************
+ok: [3.138.244.21] => {
+    "ram_info.stdout_lines": [
+        "              total        used        free      shared  buff/cache   available",
+        "Mem:            815         295         130          22         389         366",
+        "Swap:             0           0           0"
+    ]
+}
+
+PLAY RECAP ******************************************************************************************************************************
+3.138.244.21               : ok=5    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+------------------------------------------------------------------------------------------------------------------------------------------------------ - 
+- ansible all -m ping         // for the default inventory set in ansible.cfg  no need to add -i <inventory-name> 
+- ansible all -m ping -i <inventory-name>
+- ansible <ip-address1>:<ip-address2> -m ping -i <inventory-name>
+- ansible group1:group2 -m ping -i <inventory-name>        
+- ansible -i <invetory-name> -m shell -a "free -m"
+AD-HOC COMMAND:-
+- ansible   server-name:group1:group2   -m   module   -a   "<argument>" 
+-------------------------------------------------------------------------------------
+- $ my_task.sh               // write the multiple arguments execute the multiple tasks in the single run command
+- $ sh                      // just 2,3 task can run using .sh if you can write the playbook for the more tasks.
