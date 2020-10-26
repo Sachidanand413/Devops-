@@ -1,0 +1,170 @@
+- [ec2-user@ip-172-31-20-26 ~]$ sudo su ansadmin
+- [ansadmin@ip-172-31-20-26 ec2-user]$ cd
+- [ansadmin@ip-172-31-20-26 ~]$ ls -lrt
+total 0
+drwxrwxr-x. 3 ansadmin ansadmin 76 Oct 25 10:21 my_working_dir
+drwxrwxr-x. 3 ansadmin ansadmin 51 Oct 26 04:03 my_ansible_prod
+- [ansadmin@ip-172-31-20-26 ~]$ cd my_ansible_prod
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ls -lrt
+total 24
+drwxr-xr-x. 2 ansadmin ansadmin     6 Oct 25 10:41 roles
+-rw-r--r--. 1 ansadmin ansadmin 20004 Oct 25 10:43 ansible.cfg
+-rw-r--r--. 1 ansadmin ansadmin    13 Oct 26 04:03 hosts
+--------------------------------------------------------------------------------------------------------------------------------------
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ vi hosts
+18.216.124.110
+3.129.44.195
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ cat ansible.cfg | grep -i hosts
+inventory       = ./hosts
+#inventory      = /etc/ansible/hosts
+#display_skipped_hosts = True
+---------------------------------------------------------------------------------------------------------------------------------------
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible 3.129.44.195 -m ping
+The authenticity of host '3.129.44.195 (3.129.44.195)' can't be established.
+ECDSA key fingerprint is SHA256:ufB7hx/Vor3aRVqZ6X69pdMV/IuK7KnQzB/Lcae7kQc.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+[WARNING]: Platform linux on host 3.129.44.195 is using the discovered Python interpreter at /usr/bin/python, but future installation of
+another Python interpreter could change this. See https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+for more information.
+3.129.44.195 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong
+----------------------------------------------------------------------------------------------------------------------------------------    
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible 18.216.124.110:3.129.44.195 -m ping
+[WARNING]: Platform linux on host 18.216.124.110 is using the discovered Python interpreter at /usr/bin/python, but future installation
+of another Python interpreter could change this. See
+https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html for more information.
+18.216.124.110 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+[WARNING]: Platform linux on host 3.129.44.195 is using the discovered Python interpreter at /usr/bin/python, but future installation of
+another Python interpreter could change this. See https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+for more information.
+3.129.44.195 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+--------------------------------------------------------------------------------------------------------------------------------------------
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ vi hosts
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ssh-copy-id 172.31.20.26
+
+/b- in/ssh-copy-id: INFO: Source of key(s) to be installed: "/home/ansadmin/.ssh/id_rsa.pub"
+The authenticity of host '172.31.20.26 (172.31.20.26)' can't be established.
+ECDSA key fingerprint is SHA256:LCpp3Qp1pVNEIj9EOpbM0gJX/RLvUTXv41HZMLohxYk.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+ansadmin@172.31.20.26's password:
+Permission denied, please try again.
+ansadmin@172.31.20.26's password:
+
+Number of key(s) added: 1
+
+Now try logging into the machine, with:   "ssh '172.31.20.26'"
+and check to make sure that only the key(s) you wanted were added.
+
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ vi hosts
+--------------
+[web-server]
+3.129.44.195
+
+[db-server]
+18.216.124.110
+
+[db-sql]
+172.31.20.26
+
+---------------
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible web-server -m ping
+
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Platform linux on host 3.129.44.195 is using the discovered Python interpreter at /usr/bin/python, but future installation of
+another Python interpreter could change this. See https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+for more information.
+3.129.44.195 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+    
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible web-server:db-sql -m ping                    // Run to groups at a time. 
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Platform linux on host 3.129.44.195 is using the discovered Python interpreter at /usr/bin/python, but future installation of
+another Python interpreter could change this. See https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+for more information.
+3.129.44.195 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+172.31.20.26 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": false,
+    "ping": "pong"
+
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ vi group-groups
+----------------------------------------------------------------------
+[web-server]
+3.129.44.195
+
+[db-server]
+18.216.124.110
+
+[db-sql]
+172.31.20.26
+
+
+[db:children]                      // Group of Groups 
+db-server
+db-sql
+
+
+------------------------------------------------------------------------
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ vi ansible.cfg
+
+[defaults]
+# some basic default values...
+inventory       = ./group-groups                  // Add the file to the invetory path under ansible.cfg
+#inventory      = /etc/ansible/hosts
+#library        = /usr/share/my_modules/
+#module_utils   = /usr/share/my_module_utils/
+#remote_tmp     = ~/.ansible/tmp
+
+
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible db -m ping
+
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Platform linux on host 18.216.124.110 is using the discovered Python interpreter at /usr/bin/python, but future installation
+of another Python interpreter could change this. See
+https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html for more information.
+18.216.124.110 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+172.31.20.26 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": false,
+    "ping": "pong"
