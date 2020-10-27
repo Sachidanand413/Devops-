@@ -1,0 +1,498 @@
+
+
+- Update ubuntu at the start.
+  $ sudo apt-get update
+-	Install the Ubuntu docker image (|When the image is run to form a container, which has three state of lifecyle of container
+	RUN, STOP, REMOVE.)
+	$ sudo apt-get install docker.io
+	
+-	To check the version of docker installed
+	$ docker --version
+
+-	To pull the docker image from the central repository
+	$ sudo docker pull ubuntu
+	
+-	To check the installed images
+	$ sudo docker images
+
+-	To Run the cotainer at the container terminal in the background 
+	$	sudo docker run -it -d ubuntu
+	c8cc7d5e6086b38994e142011da541d00705a6475f0fb43c833f966aa980713e
+
+-	To look how many containers are running 
+	$ sudo docker ps
+	CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+c8cc7d5e6086        ubuntu              "/bin/bash"         23 seconds ago      Up 22 seconds      
+
+-	To stop the running container  $ sudo docker stop container-id
+	$ sudo docker stop c8cc7d5e6086
+	$ sudo docker ps       # No images will be found of the container id image is stopped.
+	CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS
+	
+-	Even to know the status of the all images which are in the running and stopped state.
+	$ sudo docker ps -ago
+	CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                     PORTS               NAMES
+25da51691377        ubuntu              "/bin/bash"         56 seconds ago      Up 55 seconds                                  crazy_wu
+c8cc7d5e6086        ubuntu              "/bin/bash"         10 minutes ago      Exited (0) 4 minutes ago 
+
+------------------------------------------------------------------------------------------------------------------------------
+-	To make the running cotainer interative(-it) and to work in the running state container(bash).
+	$ sudo docker exec -it 25da51691377 bash
+	Now you jump into that container
+	
+	root@25da51691377:/#
+Now we are the environment where the developer works, as we are using the ubuntu container all command used in the ubuntu works 
+in this environment. A ubuntu OS having the container of the ubuntu environment to work upon as new ubuntu running in it.
+
+The environment present in the container is totally independent of the system OS where the container posses the minimium 
+library of the ubuntu packages to run that instance on the container. so can't run the sudo command as this library is not installed 
+in the container environment, Even you won't find the docker installed in it, because we have installed at the outer OS.
+		
+		- root@25da51691377:/# sudo
+bash: sudo: command not found
+		- root@25da51691377:/# docker --version
+bash: docker: command not found
+
+-	To get exit from the docker container enviroment, and return back to the real environment.
+	root@25da51691377:/# exit
+	exit
+	ubuntu@ip-172-31-25-19:~$
+	
+-----------------------------------------------------------------------------------------------------------------------------	
+-	If the container makes some sort of problem while stopping it then we have a command to kill that insatance
+	$ sudo docker kill <container-id> 
+
+- 	To completely remove the whole container from the image we have the command.
+	$ sudo docker rm <container-id>
+	----~$ sudo docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                      PORTS               NAMES
+25da51691377        ubuntu              "/bin/bash"         42 minutes ago      Exited (0) 9 minutes ago                        crazy_wu
+c8cc7d5e6086        ubuntu              "/bin/bash"         52 minutes ago      Exited (0) 46 minutes ago 
+	-----$ sudo docker rm 25da51691377
+25da51691377
+	-----$ sudo docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                      PORTS               NAMES
+c8cc7d5e6086        ubuntu              "/bin/bash"         55 minutes ago      Exited (0) 49 minutes ago                       strange_mayer
+
+-	To remove all the containers present in the image are done by the single command. 
+-	-----$ sudo docker rm -f $(sudo docker ps -a -q)
+
+*****************************************************************************************************************************
+THE COMPLETE LIFECYCLE OF THE DOCKER * 
+																							* DOCKER HUB(REPOSITORY)
+1. sudo apt-get install docker.io															* DOCKER ENGINE (WORKING OS)			
+2. sudo docker pull ubuntu // For the ubuntu image											* DOCKER IMAGES (INNER (multi)OS IMAGES WITH	
+3. sudo docker images // For the list of images on the machine 												 ESSENTIAL LIBRARY)				
+3. sudo run -it -d <container-id> //to run the multiple container in the docker image 		* DOCKER CONTAINER (MULTIPLE CONTAINER
+4. sudo exec -it <container-id> bash //(Into the BASH terminal) 												IN A IMAGE)
+5. sudo stop <container-id>																	* Each container with multiple directories or files	
+6. sudo kill <container-id>
+7. sudo rm <container-id> // Deleting the container. 
+8. sudo rmi <image-id> // Removing the Image form the machine.
+
+**  To install image and run the container in a single step is 
+	$ sudo docker run -ti -d ubuntu 
+	
+*** When you create a directory (mkdir) in a container and remove that container form the image then you won't even find
+	the created directory in the image.
+
+-	root@7c4382a1688f:/# mkdir sachin
+-	root@7c4382a1688f:/# ls
+	bin   dev  home  lib32  libx32  mnt  proc  run     sbin  sys  usr
+	boot  etc  lib   lib64  media   opt  root  sachin  srv   tmp  var
+-	root@7c4382a1688f:/# exit
+	exit
+-	ubuntu@ip-172-31-25-19:~$ sudo docker rm -f 7c4382a1688f
+	7c4382a1688f
+	When you start the another container you won't be finding the sachin directory in that container.
+	So we have a command to create a directory in the container and which will be saved even in the image formed over that container
+******************************************************************************************************************************	
+-	If you want to save the app or the file in the images when made changes in the container, Even after the deletion of the 
+	that container in which the app or the file was created. Just run the assigned images after making commit to save the 
+	file.// Images~$ sudo docker commit <container-id> <image-id> \\
+	
+-  	ubuntu@ip-172-31-25-19:~$ sudo docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+ubuntu              latest              bb0eaf4eee00        7 days ago          72.9MB
+-	ubuntu@ip-172-31-25-19:~$ sudo docker run -it -d bb0eaf4eee00
+c6449a602d42659f3d65f83663cd620f6935a9b8d733baab21d5d576b3e385ba
+-	ubuntu@ip-172-31-25-19:~$ sudo docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+c6449a602d42        bb0eaf4eee00        "/bin/bash"         24 seconds ago      Up 23 seconds                           inspiring_lichterman
+f806902d65a5        ubuntu              "/bin/bash"         22 minutes ago      Up 22 minutes                           determined_hertz
+-	ubuntu@ip-172-31-25-19:~$ sudo docker exec -it c6449a602d42 bash
+-	root@c6449a602d42:/# mkdir shiva
+-	root@c6449a602d42:/# ls
+bin   dev  home  lib32  libx32  mnt  proc  run   shiva  sys  usr
+boot  etc  lib   lib64  media   opt  root  sbin  srv    tmp  var
+-	root@c6449a602d42:/# exit
+exit
+-	ubuntu@ip-172-31-25-19:~$ sudo docker commit c6449a602d42 test
+sha256:f42bf3473f9938bf16238db52b5c683fecc1fa1277113c0c1cd6a72fe57afecd
+-	ubuntu@ip-172-31-25-19:~$ sudo docker run -it -d test
+83b5e67574e35921775ffb7890ceb17fb1bef317c8730166ecc7078d2cc6a4f5
+-	ubuntu@ip-172-31-25-19:~$ sudo exec -it 83b5e67574e35921775ffb7890ceb17fb1bef317c8730166ecc7078d2cc6a4f5 bash
+sudo: exec: command not found
+-	ubuntu@ip-172-31-25-19:~$ sudo docker exec -it 83b5e67574e35921775ffb7890ceb17fb1bef317c8730166ecc7078d2cc6a4f5 bash
+-	root@83b5e67574e3:/# ls
+bin   dev  home  lib32  libx32  mnt  proc  run   shiva  sys  usr
+boot  etc  lib   lib64  media   opt  root  sbin  srv    tmp  var
+
+******************************************************************************************************************************
+															COMMIT THESE CHANGES TO 
+	UBUNTU     ---------->									CONTAINER
+	CONTAINER 				INSTALL APACHE 		----------------------------------->   UBUNTU CONTAINER WITH 
+						SERVER ON THE CONTAINER 											APACHE INSTALLED 
+						
+-	Get into the container and update it 
+*	root@63861e0c2157:/# apt-get update
+
+-	Now install the apache2 server on the container and save it as an image <Dockerhub-id>/<Image-name> by commiting.
+	Even after the container in which apache2 was created is removed the apache2 server will be saved in the image of 
+	<Dockerhub-id>/<Image-name>
+	
+*	root@63861e0c2157:/# apt-get install apache2
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+
+- 	To check the apache2 sevice has started or not
+root@63861e0c2157:/# service apache2 status
+ * apache2 is not running
+root@63861e0c2157:/# service apache2 start
+ * Starting Apache httpd web server apache2                                                          AH00558: apache2: Could not reliably determine the server's fully qualified doma                     in name, using 172.17.0.5. Set the 'ServerName' directive globally to suppress t                     his message
+ *
+root@63861e0c2157:/# service apache2 service
+Usage: apache2 {start|stop|graceful-stop|restart|reload|force-reload}
+root@63861e0c2157:/# exit
+exit
+ubuntu@ip-172-31-25-19:~$ sudo docker commit 63861e0c2157 Sachidanand413/apache2                     invalid reference format: repository name must be lowercase
+ubuntu@ip-172-31-25-19:~$ sudo docker commit 63861e0c2157 sachidanand413/apache2                     sha256:9e1e799602a28cd289b99e4453a7220e4e73ee69ae8fe3282d908d93fce3794e
+ubuntu@ip-172-31-25-19:~$ sudo docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED                                  STATUS              PORTS               NAMES
+63861e0c2157        f42bf3473f99        "/bin/bash"         9 minutes ago                            Up 9 minutes                            modest_wilson
+83b5e67574e3        test                "/bin/bash"         About an hour ago                        Up About an hour                        nostalgic_burnell
+c6449a602d42        bb0eaf4eee00        "/bin/bash"         About an hour ago                        Up About an hour                        inspiring_lichterman
+f806902d65a5        ubuntu              "/bin/bash"         About an hour ago                        Up About an hour                        determined_hertz
+ubuntu@ip-172-31-25-19:~$ sudo docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED                                  STATUS              PORTS               NAMES
+63861e0c2157        f42bf3473f99        "/bin/bash"         9 minutes ago                            Up 9 minutes                            modest_wilson
+83b5e67574e3        test                "/bin/bash"         About an hour ago                        Up About an hour                        nostalgic_burnell
+c6449a602d42        bb0eaf4eee00        "/bin/bash"         About an hour ago                        Up About an hour                        inspiring_lichterman
+f806902d65a5        ubuntu              "/bin/bash"         About an hour ago                        Up About an hour                        determined_hertz
+ubuntu@ip-172-31-25-19:~$ sudo docker rm -f 63861e0c2157
+63861e0c2157
+ubuntu@ip-172-31-25-19:~$ sudo docker images
+REPOSITORY               TAG                 IMAGE ID            CREATED                                  SIZE
+sachidanand413/apache2   latest              9e1e799602a2        2 minutes ago                            209MB
+test                     latest              f42bf3473f99        About an hour a                     go   72.9MB
+ubuntu                   latest              bb0eaf4eee00        7 days ago                               72.9MB
+ubuntu@ip-172-31-25-19:~$ sudo docker run -it -p 82:80 -d 9e1e799602a2  // where 82 is os port number and 80 is container port 
+b39da95c711562ba05c1b461a9255873ba19952eb9e49ac4a4a160527b358484
+ubuntu@ip-172-31-25-19:~$ sudo docker exec -it b39da95c711562ba05c1b461a9255873b                     a19952eb9e49ac4a4a160527b358484 bash
+root@b39da95c7115:/# service apache2 status
+ * apache2 is not running
+root@b39da95c7115:/# service apache2 start
+ * Starting Apache httpd web server apache2                                                          AH00558: apache2: Could not reliably determine the server's fully qualified doma                     in name, using 172.17.0.5. Set the 'ServerName' directive globally to suppress t                     his message
+ *
+root@b39da95c7115:/# exit
+-	Now have a look on the port number assigned in the instance of the aws in the browser where you can find the apache running on it
+
+*******************************************************************************************************************************
+-	To get connected to the dockerhub and push the images to the repositories.
+	$ sudo docker login 
+	$ username sachidanand413
+	$ password S@chin413
+ 
+    $ sudo docker push sachidanad413/apache2  // sudo docker push <image-id>
+
+******************************************************************************************************************************
+    WHAT IS THE DOCKERFILE ! 
+**	EVERYTHING DONE TILL NOW THE WHOLE DOCKER LIFECYCLE IS MAINTAINED AND RUN AUTOMATEDLY USING THE SCRIPTED PROGRAM, KNOWN
+	AS THE DOCKERFILE.
+	
+	FROM ----------- FROM <ubuntu>
+	ADD  ----------- ADD <source><destination in container> // add files to the container being build.
+					 (ADD./var/www/html) // (./var) all files from the directory with html extention.
+	RUN ------------ Each run statement adds a new layer to the docker images.
+					 (RUN apt-get update)
+					 (RUN apt-get -y install apache2)
+	CMD ------------ This keyword is used to run commands on the start of the container. These commands run only when
+					there is no argument specified while running the container
+					 (CMD apachectl -D FOREGROUND)
+	ENTRYPOINT ----- Its a bit same as that of CMD where we can provide the argument in the entrypoint. or irrespective of
+					have you provided the argument or not.
+					 (ENTRYPOINT apachectl -D FOREGROUND)
+	ENV ------------ Used to define environment variables in the container run-time.
+					 (ENV name Devops Intellipaat)
+					 
+- 	Firstly create a directory by the doockerfile and make nano file in the of Dockerfile which posses the automated program 
+	for the execution of the program. 
+	dockerfile$ nano Dockerfile 
+- 	Getting into the file and write the program to get automation.
+ 
+ ***********************************
+ FROM ubuntu
+ RUN apt-get update 
+ RUN apt-get -y install apache2
+ ADD . /var/www/html
+ ENTRYPOINT apachectl -D FOREGROUND   //Apache is running at the foreground without getting into the container.
+ ENV name Sachin                      // Environment name is set to sachin
+ ***********************************
+-	And create the html file to check the apache server is running or not. 
+	So create the 1.html file with code into it
+	<html>
+	<title> Hello World </title>
+	<body> 
+	<h1> Hello this is sachidanand </h1>
+	</body>
+	</html>
+ *********************************************
+- 	Now build the automation program using the automation program.
+**	$ sudo docker build . -t new_dockerfile 
+    $ sudo docker run -it -p 84:80 -d <image-id>
+- 	Now you go to the browser and check for the port number 84 and 84/1.html
+	you will get the executed html file.
+	
+	$ sudo docker exec -it <container-id> bash 
+	container#cd  /var/www/html  // getting into the directory you will get the all executed file in it.
+	container# echo $name    // environment is executed
+	**************************************************************************************************************************
+	
+	DOCKER VOLUMES 
+	
+	BIND VOLUME are the voulmes which are the mirrors of the directory what all changes are made to the directory are 
+	available in the cotainer where that bind cvolumne is assigned.
+	
+	***************************************************************************************************************************
+	ubuntu@ip-172-31-25-19:~$ cd dockerfile
+-	ubuntu@ip-172-31-25-19:~/dockerfile$ docker run -it -v /home/ubuntu/dockerfile:/app -d ubuntu
+WARNING: Error loading config file: /home/ubuntu/.docker/config.json: stat /home/ubuntu/.docker/config.json: permission denied
+8d99e4e53c27de46e49910b48eac1f06871d4e0d5f7f798b56e03c350b5b247d
+-	ubuntu@ip-172-31-25-19:~/dockerfile$ docker exec -it 8d99e4e53c27de46e49910b48eac1f06871d4e0d5f7f798b56e03c350b5b247d bash
+WARNING: Error loading config file: /home/ubuntu/.docker/config.json: stat /home/ubuntu/.docker/config.json: permission denied
+-	root@8d99e4e53c27:/# cd app
+-	root@8d99e4e53c27:/app# ls
+1.html  2.html  Dockerfile
+-	root@8d99e4e53c27:/app# 
+
+Open another ubuntu session and create a another file by name 3.html in the dockerfile directory 
+-	ubuntu@ip-172-31-25-19:~/dockerfile$ touch 3.html
+
+Come back to the previous session of cotainer having the app folder the changes made in the diretory is reflected in the container
+-	root@8d99e4e53c27:/app# ls
+1.html  2.html  3.html	Dockerfile
+-	root@8d99e4e53c27:/app# 
+
+There is a draw back in the BIND VOLUMES where we will be assigning the directory location to form a volume when we save 
+that to the dockerhub cannot be runned in the another environment like in to another OS, as this was specified to the ubuntu
+environment and the volume was saved in its directory.
+
+-	So to overcome this problem thier is an another type of volume
+	Volumes are the preferred mechanism for persisting data generated by and used by Docker containers. While bind mounts are dependent
+ on the directory structure of the host machine, volumes are completely managed by Docker. Volumes have several advantages over bind mounts:
+
+	Volumes are easier to back up or migrate than bind mounts.
+	You can manage volumes using Docker CLI commands or the Docker API.
+	Volumes work on both Linux and Windows containers.
+	Volumes can be more safely shared among multiple containers.
+	Volume drivers let you store volumes on remote hosts or cloud providers, to encrypt the contents of volumes, or to add other 
+	functionality.
+	New volumes can have their content pre-populated by a container.
+	In addition, volumes are often a better choice than persisting data in a container’s writable layer, because a volume does not increase
+	the size of the containers using it, and the volume’s contents exist outside the lifecycle of a given container. 
+	
+-	ubuntu@ip-172-31-25-19:~$ docker volume create test
+WARNING: Error loading config file: /home/ubuntu/.docker/config.json: stat /home/ubuntu/.docker/config.json: permission denied
+test
+-	ubuntu@ip-172-31-25-19:~$ docker volume ls
+WARNING: Error loading config file: /home/ubuntu/.docker/config.json: stat /home/ubuntu/.docker/config.json: permission denied
+DRIVER              VOLUME NAME
+local               test
+-	ubuntu@ip-172-31-25-19:~$ docker run -it --mount source=test,target=/app -d ubuntu
+WARNING: Error loading config file: /home/ubuntu/.docker/config.json: stat /home/ubuntu/.docker/config.json: permission denied
+c181db64112ce79e061ed797e61c27929343890595015ea989d61db43f0fe3f3
+-	ubuntu@ip-172-31-25-19:~$ docker exec -it c181db64112ce79e061ed797e61c27929343890595015ea989d61db43f0fe3f3 bash
+WARNING: Error loading config file: /home/ubuntu/.docker/config.json: stat /home/ubuntu/.docker/config.json: permission denied
+-	root@c181db64112c:/# touch 1.html
+-	root@c181db64112c:/# touch 2.html
+1.html  2.html  
+
+_ Open another session of the ubuntu and create the same volume with the another container 
+-	ubuntu@ip-172-31-25-19:~$ docker run -it --mount source=test,target=/app -d ubuntu
+WARNING: Error loading config file: /home/ubuntu/.docker/config.json: stat /home/ubuntu/.docker/config.json: permission denied
+398e484d839376063bf50273fa4ba8141a628b65781e80375f4107c7f4bf033b
+-	ubuntu@ip-172-31-25-19:~$ docker exec -it 398e484d839376063bf50273fa4ba8141a628b65781e80375f4107c7f4bf033b bash
+WARNING: Error loading config file: /home/ubuntu/.docker/config.json: stat /home/ubuntu/.docker/config.json: permission denied
+-	root@398e484d8393:/# cd /app
+-	root@398e484d8393:/#/app# touch 3.html 
+
+	The creation of the file will reflect in the previous session volume, the container is different but the assigned source voulmes
+is same and the folder as a target will copy the source files in it. which reflect in the previous directory.
+**********************************************************************************************************************************************
+SYNTAX FOR VOLUME - docker volume create <volume-name>
+					docker run -it --mount source=<name-of-volume>,target=<name-of-targetfile> -d <image-name> 
+***********************************************************************************************************************************************	
+
+BREAKING THE MONOLITHIC USING DOCKER // BY MAKING DOCKER AS THE MICROSERVICES.
+
+Monolithic application is a single tiered software application in which different components are combined into a single program which resides 
+in a single platform
+
+Microservices - are a software development architectural style that structures an application as a collection of loosely coupled servics.
+Highly maintainable and testable
+Loosely coupled
+Independently deployable
+Organized around business capabilities
+Owned by a small team
+
+THERE ARE MULTIPLE DOCKER COTAINER WHICH WORK INTERCONNECTEDLY BY COMMUNICATING WIHT EACH OTHER. (microservices)
+WHICH ARE CALLED THE DOCKER COMPOSE:-
+
+Compose is a tool for defining and running multi-container Docker applications. With Compose, you use a YAML file to configure your application's.
+Then, with a single command, you create and start all the services from your configuration. Run docker-compose up and compose starts and runs your 
+entire app.
+**************************************
+ubuntu@ip-172-31-25-19:~$ docker-compose --version
+
+Command 'docker-compose' not found, but can be installed with:
+
+sudo snap install docker          # version 19.03.11, or
+sudo apt  install docker-compose
+
+See 'snap info docker' for additional versions.
+
+ubuntu@ip-172-31-25-19:~$ sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   651  100   651    0     0   9434      0 --:--:-- --:--:-- --:--:--  9434
+100 11.6M  100 11.6M    0     0  13.5M      0 --:--:-- --:--:-- --:--:-- 13.5M
+ubuntu@ip-172-31-25-19:~$ sudo chmod +x /usr/local/bin/docker-compose
+ubuntu@ip-172-31-25-19:~$ docker-compose --version
+docker-compose version 1.27.4, build 40524192
+ubuntu@ip-172-31-25-19:~$ mkdir compose
+ubuntu@ip-172-31-25-19:~$ cd compose
+ubuntu@ip-172-31-25-19:~/compose$ nano wordpress.yaml
+ubuntu@ip-172-31-25-19:~/compose$ mv wordpress.yaml docker-compose.yaml
+**********************************************************************************
+-	Into the nano file write the YAML file 
+services:
+   db:
+     image: mysql:5.7
+     volumes:
+       - db_data:/var/lib/mysql
+     restart: always
+     environment:
+       MYSQL_ROOT_PASSWORD: somewordpress
+       MYSQL_DATABASE: wordpress
+       MYSQL_USER: wordpress
+       MYSQL_PASSWORD: wordpress
+
+   wordpress:
+     depends_on:
+       - db
+     image: wordpress:latest
+     ports:
+       - "8000:80"
+     restart: always
+     environment:
+       WORDPRESS_DB_HOST: db:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+       WORDPRESS_DB_NAME: wordpress
+volumes:
+    db_data: {}
+*************************************************************************************
+- Run using docker-compose using the command below
+-	ubuntu@ip-172-31-25-19:~/compose$
+
+Open the browser with user public ip address extending to port /8000
+-	http://18.222.124.81:8000/ //leads to the wordpress dashboard which is connected to the mysql database in the background.
+
+ubuntu@ip-172-31-25-19:~$ docker ps
+WARNING: Error loading config file: /home/ubuntu/.docker/config.json: stat /home/ubuntu/.docker/config.json: permission denied
+CONTAINER ID        IMAGE                COMMAND                  CREATED             STATUS              PORTS                  NAMES
+5f5ffef54e3f        wordpress:latest     "docker-entrypoint.s…"   9 minutes ago       Up 9 minutes        0.0.0.0:8000->80/tcp   compose_wordpress_1
+4d2a1c9f0c0d        mysql:5.7            "docker-entrypoint.s…"   9 minutes ago       Up 9 minutes        3306/tcp, 33060/tcp    compose_db_1
+398e484d8393        ubuntu               "/bin/bash"              2 hours ago         Up 2 hours                                 goofy_bell
+c181db64112c        ubuntu               "/bin/bash"              2 hours ago         Up 2 hours                                 crazy_euclid
+8d99e4e53c27        ubuntu               "/bin/bash"              2 hours ago         Up 2 hours                                 vibrant_burnell
+b4891e18e783        ubuntu               "/bin/bash"              2 hours ago         Up 2 hours                                 magical_jennings
+ed3799c6d773        bea7c99401be         "/bin/sh -c 'apt-get…"   2 hours ago         Up 2 hours                                 determined_almeida
+3e30fa5aaba5        sachidanand/apache   "/bin/bash"              45 hours ago        Up 45 hours         0.0.0.0:82->80/tcp     infallible_kare
+7e483458909d        ubuntu               "/bin/bash"              45 hours ago        Up 45 hours 
+
+***************************************************************************************
+                                                       CONTAINER ORCHESTRATION 
+- Container orchestration is the automatic process of managing or scheduling the work of individual containers for applications based on 
+  microservices within multiple clusters. The widely deployed container orchestration platforms are based on open-source versions like 
+  Kubernetes, Docker Swarm	
+-	WHAT IS DOCKER SWARM ?  
+	Docker swarm is a clustering and scheduling tool for docker containers. With swarm, it administrators and developers can establish and manage a 
+	cluster of docker nodes as a single virtual system.
+	
+	WORKER-1 								WORKER-2									WORKER-3
+	   !--------------- ----                    !                         -------------------!
+	                        !----------------   !    --------------------!            
+										    LEADER
+											
+										CREATING A DOCKER SWARM CLUSTER
+	***********************IN-- THE-- MASTER--NODE*********************************************
+- 	ubuntu@ip-172-31-25-19:~$ cd compose
+ubuntu@ip-172-31-25-19:~/compose$ docker swarm init --advertise-addr=18.222.124.81
+WARNING: Error loading config file: /home/ubuntu/.docker/config.json: stat /home/ubuntu/.docker/config.json: permission denied
+Swarm initialized: current node (lb9a8w7mknbph9sdxp857g5p7) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-4kukt6zibcblpynhhn5itgh27iykwkg1odqngi2kdmi8l2h1kc-65jpcy3bqer07o610aqd6h3s0 18.222.124.81:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+*
+
+*************************IN-- THE-- WORKER ***************************************************
+ubuntu@ip-172-31-29-125:~$ sudo docker --version
+Docker version 19.03.6, build 369ce74a3c
+ubuntu@ip-172-31-29-125:~$ sudo  docker swarm join --token SWMTKN-1-4kukt6zibcblpynhhn5itgh27iykwkg1odqngi2kdmi8l2h1kc-65jpcy3bqer07o610aqd6h3s0 18.222.124.81:2377
+This node joined a swarm as a worker.
+*****************IN --THE-- MASTER-- NODE****************************************************************************
+
+ubuntu@ip-172-31-25-19:~/compose$ docker node ls
+WARNING: Error loading config file: /home/ubuntu/.docker/config.json: stat /home/ubuntu/.docker/config.json: permission denied
+ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+lb9a8w7mknbph9sdxp857g5p7 *   ip-172-31-25-19     Ready               Active              Leader              19.03.6
+35nlux6z2ya8zo4kum692tn3i     ip-172-31-29-125    Ready               Active                                  19.03.6
+
+*********IN -- THE --WORKER******************* 
+ubuntu@ip-172-31-29-125:~$ sudo docker swarm leave
+Node left the swarm.
+*********IN THE MASTER NODE****************************************************************************
+ubuntu@ip-172-31-25-19:~/compose$ docker node ls
+WARNING: Error loading config file: /home/ubuntu/.docker/config.json: stat /home/ubuntu/.docker/config.json: permission denied
+ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+lb9a8w7mknbph9sdxp857g5p7 *   ip-172-31-25-19     Ready               Active              Leader              19.03.6
+35nlux6z2ya8zo4kum692tn3i     ip-172-31-29-125    Down                Active                                  19.03.6
+
+ubuntu@ip-172-31-25-19:~/compose$ docker swarm leave --force
+WARNING: Error loading config file: /home/ubuntu/.docker/config.json: stat /home/ubuntu/.docker/config.json: permission denied
+Node left the swarm.
+**************************************************************************************
+///////////////////////docker swarm init --advertise-addr=<ip-address-of-leader>///////////////////////////////////
+
+*************** 	DEPLOYING AN APP ON DOCKER SWARM    ********************
+-	Containers on the cluster are deployed using services on Docker Swram. A service is a long- running Docker 
+	container that can br deployed to any node worker
+/***** docker service create --name <name-of-service> --replicas <number-of-replicas> <image-name> *****\
+
+After creating the swarm when the service is runned on the master node for example with replica of 5 then 
+	2 cotainer will run on the master node and other container runs on the worker nodes. If you scale the docker service 
+	with 10 then accordingly container runs as 7/3 or 6/4 on the master/worker node.
+	
+*	$ docker service create --name apache --replicas 5 -p 84:80 sachidanand/apache
+	$ docker service ls   \\ to check the running container.
+	$ docker rm -f $(docker ps -a -q)   \\ remove all the container from the master and worker, Even thou the containers
+										are auto allocated in the nodes. 
+	$ docker service scale apache=10     \\ Scale the cotainer for the 10 times with assigning tto both master and worker.
+											
+											
+	COMMAND USED TO REMOVE USE OF SUDO	****// sudo usermod -aG docker $USER \\****
