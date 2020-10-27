@@ -1,0 +1,111 @@
+
+
+-	[ansadmin@ip-172-31-20-26 my_ansible_prod]$ vi ansible.cfg
+-	[ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible all -m ping
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Platform linux on host 18.222.209.85 is using the discovered Python interpreter at /usr/bin/python, but future installation
+of another Python interpreter could change this. See
+https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html for more information.
+18.222.209.85 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+[WARNING]: Platform linux on host 3.138.247.199 is using the discovered Python interpreter at /usr/bin/python, but future installation
+of another Python interpreter could change this. See
+https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html for more information.
+3.138.247.199 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+3.20.204.65 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+-	[ansadmin@ip-172-31-20-26 my_ansible_prod]$ vi ansible.cfg
+
+-	[ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible all -m ping
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Platform linux on host 3.138.247.199 is using the discovered Python interpreter at /usr/bin/python, but future installation
+of another Python interpreter could change this. See
+https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html for more information.
+3.138.247.199 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+[WARNING]: Platform linux on host 18.222.209.85 is using the discovered Python interpreter at /usr/bin/python, but future installation
+of another Python interpreter could change this. See
+https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html for more information.
+18.222.209.85 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+3.20.204.65 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+
+****************************************************************************************************************************
+IN THE MANAGE NODE THE MODULES ARE SAVED IN THE RESPECTED FILE AS SHOWN BELOW ..THE FLAG HAS TO RUN IN ORDER TO 
+SAVE THE DIRECTORY IN THE MANAGE NODE WHICH IS BASED ON THE PYTHON THE DIRECTORY FORMED IN THE  MANAGE NODE.
+
+-	[ec2-user@ip-172-31-28-23 ~]$ sudo su ansadmin
+-	[ansadmin@ip-172-31-28-23 ec2-user]$ cd
+-	[ansadmin@ip-172-31-28-23 ~]$ ls
+-	[ansadmin@ip-172-31-28-23 ~]$ ls -a
+.  ..  .bash_history  .bash_logout  .bash_profile  .bashrc  .ssh  
+
+******************************************************************************************************************************
+******** RUN THIS INTO THE CONTROL MACHINE TO GET THE TMP AS THE DIRECTORY ...*********************
+******** IF WE DOESN'T RUN THE FLAG TMP IS NOT CREATED AS THE DIRECTORY IN THE MANAGMENT NODE******
+-	[ansadmin@ip-172-31-20-26 my_ansible_prod]$ ANSIBLE_KEEP_REMOTE_FILES=1 ansible all -m shell -a "uptime"
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Platform linux on host 3.138.247.199 is using the discovered Python interpreter at /usr/bin/python, but future installation
+of another Python interpreter could change this. See
+https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html for more information.
+3.138.247.199 | CHANGED | rc=0 >>
+ 06:53:56 up 13 min,  2 users,  load average: 0.00, 0.00, 0.00
+[WARNING]: Platform linux on host 18.222.209.85 is using the discovered Python interpreter at /usr/bin/python, but future installation
+of another Python interpreter could change this. See
+https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html for more information.
+18.222.209.85 | CHANGED | rc=0 >>
+ 06:53:56 up 13 min,  2 users,  load average: 0.00, 0.00, 0.00
+3.20.204.65 | CHANGED | rc=0 >>
+ 06:53:57 up 13 min,  2 users,  load average: 0.44, 0.16, 0.05
+****************************************************************************************************************************
+*************** INTO THE MANAGEMENT NODE*************
+-	[ansadmin@ip-172-31-28-23 ~]$ ls -a
+.  ..  .ansible  .bash_history  .bash_logout  .bash_profile  .bashrc  .ssh 
+
+-	[ansadmin@ip-172-31-28-23 ~]$ cd .ansible
+-	[ansadmin@ip-172-31-28-23 .ansible]$ ls
+tmp
+-	[ansadmin@ip-172-31-28-23 .ansible]$ cd tmp
+-	[ansadmin@ip-172-31-28-23 tmp]$ ls
+ansible-tmp-1603781636.2898028-1811-28800452544339
+-	[ansadmin@ip-172-31-28-23 tmp]$ pwd
+/home/ansadmin/.ansible/tmp
+-	[ansadmin@ip-172-31-28-23 tmp]$ ^C
+-	[ansadmin@ip-172-31-28-23 tmp]$ cd ansible-tmp-1603781636.2898028-1811-28800452544339
+-	[ansadmin@ip-172-31-28-23 ansible-tmp-1603781636.2898028-1811-28800452544339]$ pwd
+/home/ansadmin/.ansible/tmp/ansible-tmp-1603781636.2898028-1811-28800452544339
+-	[ansadmin@ip-172-31-28-23 ansible-tmp-1603781636.2898028-1811-28800452544339]$ ls
+AnsiballZ_command.py
+-	[ansadmin@ip-172-31-28-23 ansible-tmp-1603781636.2898028-1811-28800452544339]$ cat AnsiballZ_command.py
