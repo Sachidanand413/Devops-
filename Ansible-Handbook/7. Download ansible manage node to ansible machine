@@ -1,0 +1,77 @@
+SYNTAX - ansible group1:group2:server-name -m fetch -a "src=/home/ansadmin/demo.txt dest=./dest/"
+       - ansible group1:group2:server-name -m fetch -a "src=/home/ansadmin/demo.txt dest=./dest/ flat=yes"
+       - ansible group1:group2:server-name -m fetch -a "src=/home/ansadmin/demo.txt dest=./dest/{{inventory_hostname}}_demo.txt flat=yes"
+
+Login to the manange node from the ansible machine using "shh<hostname>"
+- [ansadmin@ip-172-31-28-23 ~]$ vi demo.txt
+- [ansadmin@ip-172-31-28-23 ~]$ pwd
+/home/ansadmin
+- [ansadmin@ip-172-31-28-23 ~]$ exit
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible web-node -m fetch -a "src=/home/ansadmin/demo.txt dest=./test/"
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+3.16.30.252 | CHANGED => {
+    "changed": true,
+    "checksum": "3b3ca28c6795d5777ab3bbbeae3a9210f1c5c874",
+    "dest": "/home/ansadmin/my_ansible_prod/test/3.16.30.252/home/ansadmin/demo.txt",
+    "md5sum": "2fcab10a6cd772072a31c41ca861b6cb",
+    "remote_checksum": "3b3ca28c6795d5777ab3bbbeae3a9210f1c5c874",
+    "remote_md5sum": null
+}
+3.133.93.95 | CHANGED => {
+    "changed": true,
+    "checksum": "3be1e4094eb9803fdf255d1921b46f8da8417b38",
+    "dest": "/home/ansadmin/my_ansible_prod/test/3.133.93.95/home/ansadmin/demo.txt",
+    "md5sum": "b6c6f890cec214c995e106d32a609fbc",
+    "remote_checksum": "3be1e4094eb9803fdf255d1921b46f8da8417b38",
+    "remote_md5sum": null
+}
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ls -lrt
+total 36
+drwxr-xr-x. 2 ansadmin ansadmin     6 Oct 25 10:41 roles
+-rw-rw-r--. 1 ansadmin ansadmin   110 Oct 26 09:48 prod_inven
+-rw-rw-r--. 1 ansadmin ansadmin   297 Oct 26 10:36 test.yml
+-rw-rw-r--. 1 ansadmin ansadmin   109 Oct 27 06:47 group-groups
+-rw-r--r--. 1 ansadmin ansadmin 20003 Oct 27 19:15 ansible.cfg
+-rw-r--r--. 1 ansadmin ansadmin    35 Oct 27 19:22 hosts
+drwxrwxr-x. 4 ansadmin ansadmin    44 Oct 27 19:35 test
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ cat test/3.133.93.95/home/ansadmin/demo.txt
+This is the manage node1
+[ansadmin@ip-172-31-20-26 my_ansible_prod]$ cat test/3.16.30.252/home/ansadmin/demo.txt
+This is the manage node-2
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible web-node -m fetch -a "src=/home/ansadmin/demo.txt dest=./newtest/ flat=yes"
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+3.16.30.252 | CHANGED => {
+    "changed": true,
+    "checksum": "3b3ca28c6795d5777ab3bbbeae3a9210f1c5c874",
+    "dest": "/home/ansadmin/my_ansible_prod/newtest/demo.txt",
+    "md5sum": "2fcab10a6cd772072a31c41ca861b6cb",
+    "remote_checksum": "3b3ca28c6795d5777ab3bbbeae3a9210f1c5c874",
+    "remote_md5sum": null
+}
+3.133.93.95 | CHANGED => {
+    "changed": true,
+    "checksum": "3be1e4094eb9803fdf255d1921b46f8da8417b38",
+    "dest": "/home/ansadmin/my_ansible_prod/newtest/demo.txt",
+    "md5sum": "b6c6f890cec214c995e106d32a609fbc",
+    "remote_checksum": "3be1e4094eb9803fdf255d1921b46f8da8417b38",
+    "remote_md5sum": null
+}
+- [ansadmin@ip-172-31-20-26 my_ansible_prod]$ ansible web-node -m fetch -a "src=/home/ansadmin/demo.txt dest=./newtest/{{inventory_hostname}}_demo.txt flat=yes"
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+3.16.30.252 | CHANGED => {
+    "changed": true,
+    "checksum": "3b3ca28c6795d5777ab3bbbeae3a9210f1c5c874",
+    "dest": "/home/ansadmin/my_ansible_prod/newtest/3.16.30.252_demo.txt",
+    "md5sum": "2fcab10a6cd772072a31c41ca861b6cb",
+    "remote_checksum": "3b3ca28c6795d5777ab3bbbeae3a9210f1c5c874",
+    "remote_md5sum": null
+}
+3.133.93.95 | CHANGED => {
+    "changed": true,
+    "checksum": "3be1e4094eb9803fdf255d1921b46f8da8417b38",
+    "dest": "/home/ansadmin/my_ansible_prod/newtest/3.133.93.95_demo.txt",
+    "md5sum": "b6c6f890cec214c995e106d32a609fbc",
+    "remote_checksum": "3be1e4094eb9803fdf255d1921b46f8da8417b38",
+    "remote_md5sum": null
+}
+
