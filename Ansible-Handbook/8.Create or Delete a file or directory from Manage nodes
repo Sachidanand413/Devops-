@@ -1,0 +1,8 @@
+SYNTAX:-
+-   ansible server-name:group1:group2 -m file -a "path=/file-name/file.txt state=touch"   //For the creation of the file in the Manage Node
+-   ansible server-name:group1:group2 -m file -a "path=/file-name/file.txt state=absent"  //For deleting the file from the Manage nodes
+-   ansible server-name:group1:group2 -m file -a "path=/file-name/file.txt state=touch mode='077'" // default arguments can also be changed using its arbitary value
+-   ansible server-name:group1:group2 -m file -a "path=/file-name/directory-name state=directory"
+-   ansible server-name:group1:group2 -m file -a "path=/etc/file.txt state=touch" -b     // Creating the file in the root directory where user should have root privilages 
+-   ansible server-name:group1:group2 -m ping --look-hosts
+-   ansible -h   // help for the commands and attributes to be used in the command lines
