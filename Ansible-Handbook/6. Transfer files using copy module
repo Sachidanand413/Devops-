@@ -1,0 +1,285 @@
+Transfer files using copy module:-
+Syntax:-
+ansible    [-i inventory-name]    server-name1:group1:group2     -m   [module]   -a   "[argument]"
+ansible    db-server    -m   copy   -a   "src=/source/file/path"   dest=dest/location"
+ansible    db    -i [inventory]   -m    copy  -a   "content=[write any content]  dest=dest/fiel-location"
+ansible    db    -i [inventory]   -m    copy  -a   "content=[write any content]  dest=dest/fiel-location   backup=yes"
+***************************************************************************************************************************
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible all -m ping -i myhost
+
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Platform linux on host 3.14.7.142 is using the discovered Python interpreter at /usr/bin/python, but future installation of
+another Python interpreter could change this. See https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+for more information.
+3.14.7.142 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+[WARNING]: Platform linux on host 18.218.88.71 is using the discovered Python interpreter at /usr/bin/python, but future installation of
+another Python interpreter could change this. See https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+for more information.
+18.218.88.71 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+18.189.16.25 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible -i myhost db -m copy -a "src=./host dest=/tmp"
+
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Platform linux on host 3.14.7.142 is using the discovered Python interpreter at /usr/bin/python, but future installation of
+another Python interpreter could change this. See https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+for more information.
+3.14.7.142 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": true,                                      // made the changes
+    "checksum": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+    "dest": "/tmp/host",                                 // and stored in this destination files     
+    "gid": 501,
+    "group": "ansadmin",
+    "md5sum": "d41d8cd98f00b204e9800998ecf8427e",
+    "mode": "0664",
+    "owner": "ansadmin",
+    "size": 0,
+    "src": "/home/ansadmin/.ansible/tmp/ansible-tmp-1603804610.879113-2790-200428683833698/source",
+    "state": "file",
+    "uid": 501
+}
+18.189.16.25 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": true,
+    "checksum": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+    "dest": "/tmp/host",
+    "gid": 1001,
+    "group": "ansadmin",
+    "md5sum": "d41d8cd98f00b204e9800998ecf8427e",
+    "mode": "0664",
+    "owner": "ansadmin",
+    "secontext": "unconfined_u:object_r:user_home_t:s0",
+    "size": 0,
+    "src": "/home/ansadmin/.ansible/tmp/ansible-tmp-1603804611.2862823-2789-46458181931544/source",
+    "state": "file",
+    "uid": 1001
+}
+
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible -i myhost db -m copy -a "src=./host dest=/tmp/inven"
+
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Platform linux on host 3.14.7.142 is using the discovered Python interpreter at /usr/bin/python, but future installation of
+another Python interpreter could change this. See https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+for more information.
+3.14.7.142 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": true,
+    "checksum": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+    "dest": "/tmp/inven",
+    "gid": 501,
+    "group": "ansadmin",
+    "md5sum": "d41d8cd98f00b204e9800998ecf8427e",
+    "mode": "0664",
+    "owner": "ansadmin",
+    "size": 0,
+    "src": "/home/ansadmin/.ansible/tmp/ansible-tmp-1603804781.3517697-3394-203734550208312/source",
+    "state": "file",
+    "uid": 501
+}
+18.189.16.25 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": true,
+    "checksum": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+    "dest": "/tmp/inven",
+    "gid": 1001,
+    "group": "ansadmin",
+    "md5sum": "d41d8cd98f00b204e9800998ecf8427e",
+    "mode": "0664",
+    "owner": "ansadmin",
+    "secontext": "unconfined_u:object_r:user_home_t:s0",
+    "size": 0,
+    "src": "/home/ansadmin/.ansible/tmp/ansible-tmp-1603804781.3719661-3393-60201740772344/source",
+    "state": "file",
+    "uid": 1001
+}
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible -i myhost db -m copy -a "src=./host dest=/tmp/inven"
+
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Platform linux on host 3.14.7.142 is using the discovered Python interpreter at /usr/bin/python, but future installation of
+another Python interpreter could change this. See https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+for more information.
+3.14.7.142 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "checksum": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+    "dest": "/tmp/inven",
+    "gid": 501,
+    "group": "ansadmin",
+    "mode": "0664",
+    "owner": "ansadmin",
+    "path": "/tmp/inven",
+    "size": 0,
+    "state": "file",
+    "uid": 501
+}
+18.189.16.25 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": false,
+    "checksum": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+    "dest": "/tmp/inven",
+    "gid": 1001,
+    "group": "ansadmin",
+    "mode": "0664",
+    "owner": "ansadmin",
+    "path": "/tmp/inven",
+    "secontext": "unconfined_u:object_r:user_home_t:s0",
+    "size": 0,
+    "state": "file",
+    "uid": 1001
+}
+************************************************************************************************************************************
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible -i myhost db -m copy -a "content='hello from the copy module' dest=/tmp"
+
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+3.14.7.142 | FAILED! => {
+    "changed": false,
+    "msg": "can not use content with a dir as dest"
+}
+18.189.16.25 | FAILED! => {
+    "changed": false,
+    "msg": "can not use content with a dir as dest"
+}
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible -i myhost db -m copy -a "content='hello from the copy module' dest=/tmp/hello.txt"
+
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Platform linux on host 3.14.7.142 is using the discovered Python interpreter at /usr/bin/python, but future installation of
+another Python interpreter could change this. See https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+for more information.
+3.14.7.142 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": true,
+    "checksum": "8a29a8753597af71bfc03dee7c6c45e436bdea0a",
+    "dest": "/tmp/hello.txt",
+    "gid": 501,
+    "group": "ansadmin",
+    "md5sum": "e30264d5e83426fce937eaf4f9b08fa9",
+    "mode": "0664",
+    "owner": "ansadmin",
+    "size": 26,
+    "src": "/home/ansadmin/.ansible/tmp/ansible-tmp-1603805229.7896526-4075-147367209816314/source",
+    "state": "file",
+    "uid": 501
+}
+18.189.16.25 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": true,
+    "checksum": "8a29a8753597af71bfc03dee7c6c45e436bdea0a",
+    "dest": "/tmp/hello.txt",
+    "gid": 1001,
+    "group": "ansadmin",
+    "md5sum": "e30264d5e83426fce937eaf4f9b08fa9",
+    "mode": "0664",
+    "owner": "ansadmin",
+    "secontext": "unconfined_u:object_r:user_home_t:s0",
+    "size": 26,
+    "src": "/home/ansadmin/.ansible/tmp/ansible-tmp-1603805229.8067043-4074-97262813571977/source",
+    "state": "file",
+    "uid": 1001
+}
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ssh 18.189.16.25
+
+This system is not registered to Red Hat Insights. See https://cloud.redhat.com/
+To register this system, run: insights-client --register
+
+Last login: Tue Oct 27 13:27:10 2020 from 18.189.16.25
+- [ansadmin@ip-172-31-20-26 ~]$ ls
+ansible.cfg  multi_task.sh  my_ansible_prod  my_working_dir  prod_inven
+- [ansadmin@ip-172-31-20-26 ~]$ cat hello.txt
+cat: hello.txt: No such file or directory
+- [ansadmin@ip-172-31-20-26 ~]$ cat hello
+cat: hello: No such file or directory
+- [ansadmin@ip-172-31-20-26 ~]$ cd /tmp
+- [ansadmin@ip-172-31-20-26 tmp]$ cat hello.txt
+hello from the copy module[ansadmin@ip-172-31-20-26 tmp]$ ^C
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible -i myhost db -m copy -a "content='Backing up the hello.txt' dest=/tmp/hello.txt backup=yes"
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Platform linux on host 3.14.7.142 is using the discovered Python interpreter at /usr/bin/python, but future installation of
+another Python interpreter could change this. See https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+for more information.
+3.14.7.142 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "backup_file": "/tmp/hello.txt.4726.2020-10-27@13:35:00~",
+    "changed": true,
+    "checksum": "c081fdac106bfd4e4c5c30f2e79689f6fcc2fcc5",
+    "dest": "/tmp/hello.txt",
+    "gid": 501,
+    "group": "ansadmin",
+    "md5sum": "dc1153c052ca8caeb36f12ffbf02f027",
+    "mode": "0664",
+    "owner": "ansadmin",
+    "size": 24,
+    "src": "/home/ansadmin/.ansible/tmp/ansible-tmp-1603805699.0858517-4437-260186316503072/source",
+    "state": "file",
+    "uid": 501
+}
+18.189.16.25 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "backup_file": "/tmp/hello.txt.4676.2020-10-27@13:35:00~",
+    "changed": true,
+    "checksum": "c081fdac106bfd4e4c5c30f2e79689f6fcc2fcc5",
+    "dest": "/tmp/hello.txt",
+    "gid": 1001,
+    "group": "ansadmin",
+    "md5sum": "dc1153c052ca8caeb36f12ffbf02f027",
+    "mode": "0664",
+    "owner": "ansadmin",
+    "secontext": "unconfined_u:object_r:user_home_t:s0",
+    "size": 24,
+    "src": "/home/ansadmin/.ansible/tmp/ansible-tmp-1603805699.5392916-4436-210603864832039/source",
+    "state": "file",
+    "uid": 1001
+}
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ssh 18.189.16.25
+This system is not registered to Red Hat Insights. See https://cloud.redhat.com/
+To register this system, run: insights-client --register
+Last login: Tue Oct 27 13:37:17 2020 from 18.189.16.25
+- [ansadmin@ip-172-31-20-26 ~]$ cd /tmp/
+- [ansadmin@ip-172-31-20-26 tmp]$ ls -lrt
+total 12
+drwx------. 3 root     root     17 Oct 27 12:45 systemd-private-8acc43960ae1412ca4a14c13af74ef14-chronyd.service-v1JC9W
+-rw-rw-r--. 1 ansadmin ansadmin  0 Oct 27 13:16 host
+-rw-rw-r--. 1 ansadmin ansadmin  0 Oct 27 13:19 inven
+-rw-rw-r--. 1 ansadmin ansadmin 26 Oct 27 13:27 hello.txt.4676.2020-10-27@13:35:00~
+-rw-rw-r--. 1 ansadmin ansadmin 24 Oct 27 13:35 hello.txt.5164.2020-10-27@13:37:17~
+-rw-rw-r--. 1 ansadmin ansadmin 39 Oct 27 13:37 hello.txt
+- [ansadmin@ip-172-31-20-26 tmp]$ cat hello.txt.4676.2020-10-27@13:35:00~
+- [ansadmin@ip-172-31-20-26 tmp]$ cat hello.txt.5164.2020-10-27@13:37:17~
+Backing up the hello.txt[ansadmin@ip-172-31-20-26 tmp]$
