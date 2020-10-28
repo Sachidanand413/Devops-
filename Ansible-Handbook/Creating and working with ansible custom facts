@@ -1,0 +1,303 @@
+There are two types of ansible facts in the managed node
+- Default facts
+- Custom facts
+
+Why we need Custom Facts:-
+- To get user defined required facts.
+Ex: I need to find the git version, httpd version, weblogic version,db version etc....for all my managed nodes.
+
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible db -m shell -a "git --version"
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Platform linux on host 172.31.28.23 is using the discovered Python interpreter at /usr/bin/python, but future installation of
+another Python interpreter could change this. See https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+for more information.
+172.31.28.23 | FAILED | rc=127 >>
+/bin/sh: git: command not foundnon-zero return code
+172.31.20.26 | FAILED | rc=127 >>
+/bin/sh: git: command not foundnon-zero return code
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ssh 172.31.28.23
+- [ansadmin@ip-172-31-28-23 ~]$ yum install git
+- [ansadmin@ip-172-31-28-23 ~]$ yum install httpd
+
+Repeat the same step to install git and httpd in the another 2 ec2 instance or managed node:-
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ssh 172.31.23.43
+- [ansadmin@ip-172-31-20-26 ~]$ yum install git
+- [ansadmin@ip-172-31-20-26 ~]$ yum install httpd
+
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible db -m shell -a "git --version"
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Platform linux on host 172.31.28.23 is using the discovered Python interpreter at /usr/bin/python, but future installation of
+another Python interpreter could change this. See https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+for more information.
+172.31.28.23 | CHANGED | rc=0 >>
+git version 2.18.4
+172.31.20.26 | CHANGED | rc=0 >>
+git version 2.18.4
+
+
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible db -m shell -a "httpd --version"
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Platform linux on host 172.31.28.23 is using the discovered Python interpreter at /usr/bin/python, but future installation of
+another Python interpreter could change this. See https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+for more information.
+172.31.28.23 | FAILED | rc=127 >>
+/bin/sh: httpd: command not foundnon-zero return code
+172.31.20.26 | FAILED | rc=1 >>
+(13)Permission denied: AH00058: Error retrieving pid file run/httpd.pid
+AH00059: Remove it before continuing if it is corrupted.non-zero return code
+
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible db -m shell -a "/usr/sbin/httpd -version"
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+[WARNING]: Platform linux on host 172.31.28.23 is using the discovered Python interpreter at /usr/bin/python, but future installation of
+another Python interpreter could change this. See https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+for more information.
+172.31.28.23 | CHANGED | rc=0 >>
+Server version: Apache/2.2.34 (Unix)
+Server built:   Nov  1 2017 18:47:16
+172.31.20.26 | CHANGED | rc=0 >>
+Server version: Apache/2.4.37 (Red Hat Enterprise Linux)
+Server built:   Dec  2 2019 14:15:24
+
+To run the sets to check the version installed in the managed nodes seperatly for the each packages(git & httpd) we can write the custom fact in the single file.
+Steps to create the Custom Facts.
+-  Step1:- Create /etc/ansible/facts.d on Managed Nodes
+-  Step2:- Inside of facts.d place one more custom facts files with extension as .fact
+-  Step3:- The output of fact file should be a json. 
+-  Step4:- The fact file should have execution permission.
+- [root@ip-172-31-20-26 ~]# ls
+anaconda-ks.cfg  original-ks.cfg
+- [root@ip-172-31-20-26 ~]# cd /etc/ansible/
+- [root@ip-172-31-20-26 ansible]# ls
+- [ansadmin@ip-172-31-20-26 ansible]$ sudo mkdir facts.d
+- [ansadmin@ip-172-31-20-26 ansible]$ cd fact.d
+- [ansadmin@ip-172-31-20-26 fact.d]$ git --version
+git version 2.18.4
+- [ansadmin@ip-172-31-20-26 fact.d]$ sudo su -
+- [root@ip-172-31-20-26 ~]# cd /etc/ansible/
+- [root@ip-172-31-20-26 ansible]# cd facts.d
+- [root@ip-172-31-20-26 facts.d]# httpd -version | awk 'NR==1 { print $3}'
+Apache/2.4.37
+- [root@ip-172-31-20-26 facts.d]# git --version | awk 'NR==1 {print $3}'
+2.18.4
+- [root@ip-172-31-20-26 facts.d]# which bash
+/bin/bash
+- [root@ip-172-31-20-26 facts.d]# vi git_httpd_ver.fact
+
+#!/bin/bash
+
+git_ver =$(git --version | awk 'NR==1 {print $3}')
+httpd_ver =$(/usr/sbin/httpd -verison |awk 'NR==1 {print $3}')
+
+cat << EOF
+{"Git_version":"$git_ver",
+"httpd_version":"$httpd_ver"}
+
+EOF
+~
+:wq
+
+- [root@ip-172-31-20-26 facts.d]# ./git_httpd_ver.fact
+./git_httpd_ver.fact: line 4: /usr/sbin/: Is a directory
+{ "Git_version":"2.18.4",
+   "httpd_version":"Apache/2.4.37"
+}
+- [ansadmin@ip-172-31-20-26 facts.d]$ ls
+git_httpd_ver.fact
+- [ansadmin@ip-172-31-20-26 facts.d]$ cd
+- [ansadmin@ip-172-31-20-26 ~]$ cd my_working_dir
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ls
+ansible.cfg  host  my_ansible_nprod  myhost  myhosts  prod_inven  roles
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible 172.31.20.26 -m setup
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible 172.31.20.26 -m setup | grep -i git_ver
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+                "Git_version": "2.18.4",
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible 172.31.20.26 -m setup | egrep -i "(git_ver|httpd)"
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+            "git_httpd_ver": {
+                "Git_version": "2.18.4",
+                "httpd_version": "Apache/2.4.37"
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible 172.31.20.26 -m setup -a "filter=ansible_local"
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+172.31.20.26 | SUCCESS => {
+    "ansible_facts": {
+        "ansible_local": {
+            "git_httpd_ver": {
+                "Git_version": "2.18.4",
+                "httpd_version": "Apache/2.4.37"
+            }
+        },
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": false
+}
+
+
+
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible all -m file -a "path=/etc/ansible/facts.d state=directory" -b
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+[WARNING]: Platform linux on host 172.31.28.23 is using the discovered Python
+interpreter at /usr/bin/python, but future installation of another Python
+interpreter could change this. See https://docs.ansible.com/ansible/2.9/referen
+ce_appendices/interpreter_discovery.html for more information.
+172.31.28.23 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": true,
+    "gid": 0,
+    "group": "root",
+    "mode": "0755",
+    "owner": "root",
+    "path": "/etc/ansible/facts.d",
+    "size": 4096,
+    "state": "directory",
+    "uid": 0
+}
+[WARNING]: Platform linux on host 172.31.23.43 is using the discovered Python
+interpreter at /usr/bin/python, but future installation of another Python
+interpreter could change this. See https://docs.ansible.com/ansible/2.9/referen
+ce_appendices/interpreter_discovery.html for more information.
+172.31.23.43 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": true,
+    "gid": 0,
+    "group": "root",
+    "mode": "0755",
+    "owner": "root",
+    "path": "/etc/ansible/facts.d",
+    "size": 4096,
+    "state": "directory",
+    "uid": 0
+}
+172.31.20.26 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": true,
+    "gid": 0,
+    "group": "root",
+    "mode": "0755",
+    "owner": "root",
+    "path": "/etc/ansible/facts.d",
+    "secontext": "unconfined_u:object_r:etc_t:s0",
+    "size": 6,
+    "state": "directory",
+    "uid": 0
+}
+
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible all -m copy -a "src=/etc/ansible/facts.d/git_httpd_ver.fact dest=/etc/ansible/facts.d/git_httpd_ver.fact mode='0755'" -b
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+[WARNING]: Platform linux on host 172.31.28.23 is using the discovered Python
+interpreter at /usr/bin/python, but future installation of another Python
+interpreter could change this. See https://docs.ansible.com/ansible/2.9/referen
+ce_appendices/interpreter_discovery.html for more information.
+172.31.28.23 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": true,
+    "checksum": "113b79f07b5d237d5cc3477f20782fce38ef73f9",
+    "dest": "/etc/ansible/facts.d/git_httpd_ver.fact",
+    "gid": 0,
+    "group": "root",
+    "md5sum": "7b1c4032c5cadd5654e98f94bba1ab1c",
+    "mode": "0755",
+    "owner": "root",
+    "size": 197,
+    "src": "/home/ansadmin/.ansible/tmp/ansible-tmp-1603916310.5289035-7649-29068090584423/source",
+    "state": "file",
+    "uid": 0
+}
+[WARNING]: Platform linux on host 172.31.23.43 is using the discovered Python
+interpreter at /usr/bin/python, but future installation of another Python
+interpreter could change this. See https://docs.ansible.com/ansible/2.9/referen
+ce_appendices/interpreter_discovery.html for more information.
+172.31.23.43 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": true,
+    "checksum": "113b79f07b5d237d5cc3477f20782fce38ef73f9",
+    "dest": "/etc/ansible/facts.d/git_httpd_ver.fact",
+    "gid": 0,
+    "group": "root",
+    "md5sum": "7b1c4032c5cadd5654e98f94bba1ab1c",
+    "mode": "0755",
+    "owner": "root",
+    "size": 197,
+    "src": "/home/ansadmin/.ansible/tmp/ansible-tmp-1603916310.5254502-7647-84990332371431/source",
+    "state": "file",
+    "uid": 0
+}
+172.31.20.26 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": true,
+    "checksum": "113b79f07b5d237d5cc3477f20782fce38ef73f9",
+    "dest": "/etc/ansible/facts.d/git_httpd_ver.fact",
+    "gid": 0,
+    "group": "root",
+    "mode": "0755",
+    "owner": "root",
+    "path": "/etc/ansible/facts.d/git_httpd_ver.fact",
+    "secontext": "unconfined_u:object_r:etc_t:s0",
+    "size": 197,
+    "state": "file",
+    "uid": 0
+}
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible all -m setup -a "filter=ansible_local"
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+[WARNING]: Platform linux on host 172.31.23.43 is using the discovered Python
+interpreter at /usr/bin/python, but future installation of another Python
+interpreter could change this. See https://docs.ansible.com/ansible/2.9/referen
+ce_appendices/interpreter_discovery.html for more information.
+172.31.23.43 | SUCCESS => {
+    "ansible_facts": {
+        "ansible_local": {
+            "git_httpd_ver": {
+                "Git_version": "2.18.4",
+                "httpd_version": "Apache/2.4.37/"
+            }
+        },
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false
+}
+[WARNING]: Platform linux on host 172.31.28.23 is using the discovered Python
+interpreter at /usr/bin/python, but future installation of another Python
+interpreter could change this. See https://docs.ansible.com/ansible/2.9/referen
+ce_appendices/interpreter_discovery.html for more information.
+172.31.28.23 | SUCCESS => {
+    "ansible_facts": {
+        "ansible_local": {
+            "git_httpd_ver": {
+                "Git_version": "2.18.4",
+                "httpd_version": "Apache/2.4.37"
+            }
+        },
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false
+}
+172.31.20.26 | SUCCESS => {
+    "ansible_facts": {
+        "ansible_local": {                          // Ansible local are created in the managed node as the only single custom fact was provided, using git and httpd version
+            "git_httpd_ver": {
+                "Git_version": "2.18.4",
+                "httpd_version": "Apache/2.4.37"
+            }
+        },
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": false
+}
+
