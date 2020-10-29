@@ -1,0 +1,339 @@
+******************  debug module****************
+This module prints statements during execution and can be useful for debugging variables or expressions.
+Debug module accepts three parameters.
+> msg
+> var
+> verbosity
+
+Print any message from the playbook:-
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ vi print_any_msg.yml
+----------------------------------------------------------------
+---
+ - hosts: 172.31.20.26
+   tasks:
+   - debug: msg="Welcome to Ansible Playbooks"
+   
+-----------------------------------------------------------------  
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook print_any_msg.yml
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [172.31.20.26] ************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [172.31.20.26]
+
+TASK [debug] *******************************************************************
+ok: [172.31.20.26] => {
+    "msg": "Welcome to Ansible Playbooks"
+}
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+[ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook print_any_msg.yml --syntax-check
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+playbook: print_any_msg.yml
+------------------------------------------------------------------------
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ vi print_any_msg.yml
+
+---
+ - name: This is a simple play to understand debug module
+   hosts: 172.31.20.26
+   tasks:
+   - name: Printing a msg with msg parameter of debug module
+     debug:
+      msg: "Welcome to Ansible Playbooks"
+      
+ # - debug: msg="Welcome to Ansible Playbooks"    
+-----------------------------------------------------------------------
+
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook print_any_msg.yml --syntax-check
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+playbook: print_any_msg.yml
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook print_any_msg.yml
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [This is a simple play to understand debug module] ************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [172.31.20.26]
+
+TASK [Printing a msg with msg parameter of debug module] ***********************
+ok: [172.31.20.26] => {
+    "msg": "Welcome to Ansible Playbooks"
+}
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ vi print_any_msg.yml 
+---
+ - name: This is a simple play to understand debug module
+   hosts: 172.31.20.26
+   tasks:
+   - name: Printing a msg with msg parameter of debug module
+     debug:
+      msg:
+       -  "Welcome to Ansible Playbooks"
+       -  "Diffrent lines of message"
+       -  "Working with simple.yml file"
+#   - debug: msg="Welcome to Ansible Playbooks"
+
+
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook print_any_msg.yml
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [This is a simple play to understand debug module] ************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [172.31.20.26]
+
+TASK [Printing a msg with msg parameter of debug module] ***********************
+ok: [172.31.20.26] => {
+    "msg": [
+        "Welcome to Ansible Playbooks",
+        "Diffrent lines of message",
+        "Working with simple.yml file"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ which ansible-playbook
+/bin/ansible-playbook
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ vi Print_var.yml
+--------------------------------------------------------------------
+#!/bin/ansible-playbook               //(shibang) root folder directory of the play_var file
+ - name: Usage of debug module        // provide the execution permission before execution.
+   hosts: 172.31.20.26
+   tasks:
+   - name: Printing a variable value using debug module
+     debug:
+      msg: "The host name is: {{inventory_hostname}}"
+
+-------------------------------------------------------------------
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ x=3
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ echo $x
+3
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ vi Print_var.yml
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ chmod +x Print_var.yml
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ./Print_var.yml
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [Usage of debug module] ***************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [localhost]
+
+
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ vi Print_var.yml
+------------------------------------------------------------
+#!/bin/ansible-playbook               //(shibang) root folder directory of the play_var file
+ - name: Usage of debug module        // provide the execution permission before execution.
+   hosts: all
+   tasks:
+   - name: Printing a variable value using debug module
+     debug:
+      msg: "The host name is: {{inventory_hostname}}"
+
+------------------------------------------------------------
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ chmod +x Print_var.yml
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ./Print_var.yml
+
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [Usage of debug module] ***************************************************
+
+TASK [Gathering Facts] *********************************************************
+[WARNING]: Platform linux on host 172.31.23.43 is using the discovered Python
+interpreter at /usr/bin/python, but future installation of another Python
+interpreter could change this. See https://docs.ansible.com/ansible/2.9/referen
+ce_appendices/interpreter_discovery.html for more information.
+ok: [172.31.23.43]
+[WARNING]: Platform linux on host 172.31.28.23 is using the discovered Python
+interpreter at /usr/bin/python, but future installation of another Python
+interpreter could change this. See https://docs.ansible.com/ansible/2.9/referen
+ce_appendices/interpreter_discovery.html for more information.
+ok: [172.31.28.23]
+ok: [172.31.20.26]
+
+TASK [Printing a variable value using debug module] ****************************
+ok: [172.31.23.43] => {
+    "msg": "The host name is: 172.31.23.43"
+}
+ok: [172.31.20.26] => {
+    "msg": "The host name is: 172.31.20.26"
+}
+ok: [172.31.28.23] => {
+    "msg": "The host name is: 172.31.28.23"
+}
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+172.31.23.43               : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+172.31.28.23               : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+
+
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ vi Print_var.yml
+------------------------------------------------------------
+#!/bin/ansible-playbook               //(shibang) root folder directory of the play_var file
+ - name: Usage of debug module        // provide the execution permission before execution.
+   hosts: all
+   tasks:
+   - name: Printing a variable value using debug module
+     debug:
+#     msg: "The host name is: {{inventory_hostname}}"
+      var: inventory_hostname                       # Prints only the hostname not like that of msg to diasplay even the message as above
+------------------------------------------------------------
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ chmod +x Print_var.yml
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ./Print_var.yml
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [Usage of debug module] ***************************************************
+
+TASK [Gathering Facts] *********************************************************
+[WARNING]: Platform linux on host 172.31.23.43 is using the discovered Python
+interpreter at /usr/bin/python, but future installation of another Python
+interpreter could change this. See https://docs.ansible.com/ansible/2.9/referen
+ce_appendices/interpreter_discovery.html for more information.
+ok: [172.31.23.43]
+[WARNING]: Platform linux on host 172.31.28.23 is using the discovered Python
+interpreter at /usr/bin/python, but future installation of another Python
+interpreter could change this. See https://docs.ansible.com/ansible/2.9/referen
+ce_appendices/interpreter_discovery.html for more information.
+ok: [172.31.28.23]
+ok: [172.31.20.26]
+
+TASK [Printing a variable value using debug module] ****************************
+ok: [172.31.23.43] => {
+    "inventory_hostname": "172.31.23.43"
+}
+ok: [172.31.20.26] => {
+    "inventory_hostname": "172.31.20.26"
+}
+ok: [172.31.28.23] => {
+    "inventory_hostname": "172.31.28.23"
+}
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+172.31.23.43               : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+172.31.28.23               : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+******Verbosity debug using -v,-vv,-vvv, and the first one as the default with verbosity=0***
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ vi verbosity_debug.yml
+#!/bin/ansible-playbook
+ - name: Usage of verbosity of debug module
+   hosts: 172.31.20.26
+   tasks:
+   - name: verbosity as default
+     debug:
+      msg: "This is default verbosity"
+   - name: verbosity is 2
+     debug:
+      msg: "Verbosity is 2"
+      verbosity: 2
+~
+
+*****JUST THE SINGLE TASK IS PERFORMENT WHICH IS DEFAULT TASK WITH NO ASSIGNING OF VERBOSITY******
+
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook verbosity_debug.yml
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [Usage of verbosity of debug module] **************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [172.31.20.26]
+
+TASK [verbosity as default] ****************************************************
+ok: [172.31.20.26] => {
+    "msg": "This is default verbosity"
+}
+
+TASK [verbosity is 2] **********************************************************
+skipping: [172.31.20.26]
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=2    changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook verbosity_debug.yml -v
+
+Using /home/ansadmin/my_working_dir/ansible.cfg as config file
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [Usage of verbosity of debug module] **************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [172.31.20.26]
+
+TASK [verbosity as default] ****************************************************
+ok: [172.31.20.26] => {
+    "msg": "This is default verbosity"
+}
+
+TASK [verbosity is 2] **********************************************************
+skipping: [172.31.20.26] => {"skipped_reason": "Verbosity threshold not met."}
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=2    changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook verbosity_debug.yml -vv
+
+ansible-playbook 2.9.14
+  config file = /home/ansadmin/my_working_dir/ansible.cfg
+  configured module search path = ['/home/ansadmin/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /usr/lib/python3.6/site-packages/ansible
+  executable location = /bin/ansible-playbook
+  python version = 3.6.8 (default, Dec  5 2019, 15:45:45) [GCC 8.3.1 20191121 (Red Hat 8.3.1-5)]
+Using /home/ansadmin/my_working_dir/ansible.cfg as config file
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAYBOOK: verbosity_debug.yml **************************************************
+1 plays in verbosity_debug.yml
+
+PLAY [Usage of verbosity of debug module] **************************************
+
+TASK [Gathering Facts] *********************************************************
+task path: /home/ansadmin/my_working_dir/verbosity_debug.yml:2
+ok: [172.31.20.26]
+META: ran handlers
+
+TASK [verbosity as default] ****************************************************
+task path: /home/ansadmin/my_working_dir/verbosity_debug.yml:5
+ok: [172.31.20.26] => {
+    "msg": "This is default verbosity"
+}
+
+TASK [verbosity is 2] **********************************************************
+task path: /home/ansadmin/my_working_dir/verbosity_debug.yml:8
+ok: [172.31.20.26] => {
+    "msg": "Verbosity is 2"
+}
+META: ran handlers
+META: ran handlers
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+
+
+
+
+
