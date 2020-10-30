@@ -1,0 +1,253 @@
+> Command line arguments are useful to pass variables from command line
+> We can pass different types of variables in different formats:
+  > Scalar
+  > Sequence
+  > Map
+  > Files with variables
+  
+Command line arguments as scalar:-
+> x=34
+> $ ansible-playbook file_name.yml --extra-var "x=34"    or
+> $ ansible-playbook file_name.yml -e x=34      # for multiple values need to use "" qotation marks
+> $         "              "       -e "{'x':34}"
+
+Passing the multiple arguments
+> $         "              "       -e "x=56 y=86"
+> $         "              "       -e "{'x':56,'y':86}"
+
+Variable containing spaces
+> $         "              "       -e "x=56 y='ansible playbook'"
+
+Command line arguments as sequence:-
+> $         "              "       -e "{'x': [34,48,65]}"   // as a list of arrays 
+
+Command line arguments as map:-
+> $ ansible-playbook cmd_lne_arg.yml -e "{'x': {'one': 1,'two': 2},'y': {'four': 4,'five': 5}}"
+
+[ansadmin@ip-172-31-20-26 my_working_dir]$ vi cmd_lne_arg.yml
+----------------------------------------------------------
+---
+ - hosts: 172.31.20.26
+   vars:
+    x: 34
+   gather_facts: false
+   tasks:
+   - debug: var=x
+
+----------------------------------------------------------
+[ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook cmd_lne_arg.yml
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [172.31.20.26] ************************************************************
+
+TASK [debug] *******************************************************************
+ok: [172.31.20.26] => {
+    "x": 34
+}
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+
+
+[ansadmin@ip-172-31-20-26 my_working_dir]$ vi cmd_lne_arg.yml
+----------------------------------------------------------
+---
+ - hosts: 172.31.20.26
+   
+   gather_facts: false
+   tasks:
+   - debug: var=x
+
+----------------------------------------------------------
+[ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook cmd_lne_arg.yml
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [172.31.20.26] ************************************************************
+
+TASK [debug] *******************************************************************
+ok: [172.31.20.26] => {
+    "x": "VARIABLE IS NOT DEFINED!"         // Variable is  removed in the playbook
+}
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+[ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook cmd_lne_arg.yml --extra-var x=34
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [172.31.20.26] ************************************************************
+
+TASK [debug] *******************************************************************
+ok: [172.31.20.26] => {
+    "x": "34"
+}
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+[ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook cmd_lne_arg.yml -e "x=89"
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [172.31.20.26] ************************************************************
+
+TASK [debug] *******************************************************************
+ok: [172.31.20.26] => {
+    "x": "89"
+}
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+
+[ansadmin@ip-172-31-20-26 my_working_dir]$ vi cmd_lne_arg.yml
+---------------------------------------------------------------
+---
+ - hosts: 172.31.20.26
+
+   gather_facts: false
+   tasks:
+   - debug:
+      msg:
+       - "The x value is: {{x}}"
+       - "The y value is: {{y}}"
+       
+       
+ -----------------------------------------------------------------      
+[ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook cmd_lne_arg.yml -e "x=89 y=46"
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [172.31.20.26] ************************************************************
+
+TASK [debug] *******************************************************************
+ok: [172.31.20.26] => {
+    "msg": [
+        "The x value is: 89",
+        "The y value is: 46"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+
+[ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook cmd_lne_arg.yml -e "{'x':34,'y':48}"
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [172.31.20.26] ************************************************************
+
+TASK [debug] *******************************************************************
+ok: [172.31.20.26] => {
+    "msg": [
+        "The x value is: 34",
+        "The y value is: 48"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+
+[ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook cmd_lne_arg.yml -e "x=34 y='ansible playbook'"
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [172.31.20.26] ************************************************************
+
+TASK [debug] *******************************************************************
+ok: [172.31.20.26] => {
+    "msg": [
+        "The x value is: 34",
+        "The y value is: ansible playbook"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+
+[ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook cmd_lne_arg.yml -e "{'x': [3,4,5,6],'y': [8,7,6,9]}"
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [172.31.20.26] ************************************************************
+
+TASK [debug] *******************************************************************
+ok: [172.31.20.26] => {
+    "msg": [
+        "The x value is: [3, 4, 5, 6]",
+        "The y value is: [8, 7, 6, 9]"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+
+[ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook cmd_lne_arg.yml -e "{'x': {'one': 1,'two': 2},'y': {'four': 4,'five': 5}}"
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [172.31.20.26] ************************************************************
+
+TASK [debug] *******************************************************************
+ok: [172.31.20.26] => {
+    "msg": [
+        "The x value is: {'one': 1, 'two': 2}",
+        "The y value is: {'four': 4, 'five': 5}"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+
+[ansadmin@ip-172-31-20-26 my_working_dir]$ cat cmd_lne_arg.yml
+
+---
+ - hosts: 172.31.20.26
+
+   gather_facts: false
+   tasks:
+   - debug:
+      msg:
+       - "The x value is: {{x}}"
+#      - "The y value is: {{y}}"
+
+[ansadmin@ip-172-31-20-26 my_working_dir]$ cat variable_value.yml
+
+---
+#- hosts: 172.31.20.26
+#  vars:
+    x: 23
+    y: 45
+
+#  gather_facts: false
+
+  #tasks:
+  # - debug:
+  #   msg:
+  #    - "value of x: {{x}}"
+  #    - "value for y: {{y}}"
+
+[ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook cmd_lne_arg.yml -e "@variable_value.yml"
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+
+PLAY [172.31.20.26] *********************************************************************************************************************
+
+TASK [debug] ****************************************************************************************************************************
+ok: [172.31.20.26] => {
+    "msg": [
+        "The x value is: 23"
+    ]
+}
+
+PLAY RECAP ******************************************************************************************************************************
+172.31.20.26               : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
