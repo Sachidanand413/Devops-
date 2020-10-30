@@ -1,0 +1,161 @@
+
+
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ vi input_output.yml
+--------------------------------------------------------------
+---
+ - hosts: 172.31.20.26
+   vars:
+    x: 45          # Define variables
+    my_name: "Sachin"
+   tasks:
+   - debug:        # Module name
+      msg:
+       - "The x valure is: {{x}}"
+       - "My name is: {{my_name}}"
+:wq
+---------------------------------------------------
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook input_output.yml
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [172.31.20.26] ************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [172.31.20.26]
+
+TASK [debug] *******************************************************************
+ok: [172.31.20.26] => {
+    "msg": [
+        "The x valure is: 45",
+        "My name is: Sachin"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ vi input_output.yml
+--------------------------------------------------------------
+---
+ - hosts: 172.31.20.26
+   vars:
+    x: 45          # Define variables
+    my_name: "Sachin"
+   gather_facts: false   # Extra information or facts are droped at the output
+   tasks:
+   - debug:        # Module name
+      msg:
+       - "The x valure is: {{x}}"
+       - "My name is: {{my_name}}"
+:wq
+---------------------------------------------------
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook input_output.yml
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [172.31.20.26] ************************************************************
+
+TASK [debug] *******************************************************************
+ok: [172.31.20.26] => {
+    "msg": [
+        "The x valure is: 45",
+        "My name is: Sachin"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ vi input_output.yml
+---------------------------------------------------------------
+---
+ - hosts: 172.31.20.26
+   vars:
+    x: 45                # Define variables
+    my_name: "Sachin"
+
+   vars_prompt:
+    name: y
+    prompt: Enter the value for y
+    private: false       # displays while entring the value of y
+   gather_facts: false   # Extra information or facts are droped at the output
+
+   tasks:
+   - debug:              # Module name
+      msg:
+       - "The x valure is: {{x}}"
+       - "My name is: {{my_name}}"
+       - "The value of y is: {{y}}"
+~
+------------------------------------------------------------------
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook input_output.yml
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+Enter the value for y: 89
+
+PLAY [172.31.20.26] ************************************************************
+
+TASK [debug] *******************************************************************
+ok: [172.31.20.26] => {
+    "msg": [
+        "The x valure is: 45",
+        "My name is: Sachin",
+        "The value of y is: 89"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ vi input_output.yml
+------------------------------------------------------------------
+
+---
+ - hosts: 172.31.20.26
+   vars:
+    x: 45                # Define variables
+    my_name: "Sachin"
+
+   vars_prompt:
+    - name: user_name
+      prompt: Enter your user name
+      private: false       # displays while entring the value of y
+    - name: password
+      prompt: Enter your password
+      private: yes         # the default private will also be yes
+
+   gather_facts: false   # Extra information or facts are droped at the output
+
+   tasks:
+   - debug:              # Module name
+      msg:
+       - "The x valure is: {{x}}"
+       - "My name is: {{my_name}}"
+       - "Entered name is: {{user_name}} and Password is: {{password}}"
+
+
+--------------------------------------------------------------------------
+- [ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook input_output.yml
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+Enter your user name: ansadmin
+Enter your password:
+
+PLAY [172.31.20.26] ************************************************************
+
+TASK [debug] *******************************************************************
+ok: [172.31.20.26] => {
+    "msg": [
+        "The x valure is: 45",
+        "My name is: Sachin",
+        "Entered name is: ansadmin and Password is: ansadmin@123"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+
+
