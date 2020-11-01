@@ -251,3 +251,60 @@ ok: [172.31.20.26] => {
 PLAY RECAP ******************************************************************************************************************************
 172.31.20.26               : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 
+
+
+[ansadmin@ip-172-31-20-26 my_working_dir]$ vi install_unistall_httpd.yml
+---
+ - name: Installing the httpd from the playbook
+   hosts: 172.31.20.26
+
+   gather_facts: false
+
+   become: yes      # provide the root previleges
+   tasks:
+    - name: working with httpd
+      yum:
+       name: httpd
+       state: present
+~
+>esc:wq
+[ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook install_unistall_httpd.yml
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+
+PLAY [Installing the httpd from the playbook] *******************************************************************************************
+
+TASK [working with httpd] ***************************************************************************************************************
+ok: [172.31.20.26]
+
+PLAY RECAP ******************************************************************************************************************************
+172.31.20.26               : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+
+
+[ansadmin@ip-172-31-20-26 my_working_dir]$ vi install_unistall_httpd.yml
+---
+ - name: Installing through the command line argument
+   hosts: 172.31.20.26
+
+   gather_facts: false
+   become: yes
+
+   tasks:
+    - name: installing any {{pck}}
+      yum:
+       name: "{{pck}}"
+       state: "{{req_state}}"
+
+:wq
+
+[ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook install_unistall_withcmd.yml -e "pck=nginx req_state=present"
+[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+
+PLAY [Installing through the command line argument] *************************************************************************************
+
+TASK [installing any nginx] *************************************************************************************************************
+changed: [172.31.20.26]
+
+PLAY RECAP ******************************************************************************************************************************
+172.31.20.26               : ok=1    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
