@@ -1,0 +1,73 @@
+Error handling with ignoring errors :-
+---
+ - hosts: hostname groupnames
+   gather_facts: false
+   tasks:
+     - blocks:
+        - command: "ls /home/ansadmin/tomcat7"
+          register: tomcat7_out
+        - command: "ls /home/ansadmin/tomcat8"
+          register: tomcat8_out
+        - command: "ls /home/ansadmin/tomcat9"
+          register: tomcat9_out
+       ignore_errors: yes
+       
+     - debug: var=tomcat7_out
+     - debug: var=tomcat8_out
+     - debug: var=tomcat9_out
+     
+------------------------------------------------------------------------
+
+ADVANCE ERROR HANDLING ON THE DIFFRENT OS ENVIRONMENTS :-
+
+--- 
+ - hosts: web_servers
+   gather_facts: false
+   tasks:
+     - blocks:
+         - name: Insatalling httpd for Redhat os family
+           yum: 
+             name: httpd
+             state: present
+         - name: Starting httpd for redhat os family
+           service:
+             name: httpd
+             state: started
+       when: ansible_os_family=="RedHat"     # to install and run on the redhat servers
+       become: yes                           # for being root user
+     
+     - blocks:
+         - name: Installing apache2 for "Debian os family"
+           yum: 
+             name: apache2
+             state: present
+         - name: Starting apache2 for Debian os family
+           yum: 
+             name: apache2
+             state: start
+       when: ansible_os_family=="Debian"
+       become:yes
+     - debug: 
+         msg: "Successfully completed the tasks"
+         
+         
+ -------------------------------------------------------------------------------------
+ 
+ Rescue and always error handling :-
+ 
+---
+ - hosts: hostname groupnames
+   gather_facts: false
+   tasks:
+     - blocks:
+         - name: Finding files in home/ansadmin/tomcat8
+         - command: "ls /home/ansadmin/tomcat8"
+           register: tomcat8_out
+      rescue:
+        - debug:
+            msg: "The given path /home/ansadmin/tomcat8 is not valid"
+      always:
+        - debug: 
+            msg: "This will alway get executed"
+            
+------------------------------------------------------------------------------------
