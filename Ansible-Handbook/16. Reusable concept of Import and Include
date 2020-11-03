@@ -1,0 +1,120 @@
+---
+ - name: Simple play to install multiple pkgs
+   gather_facts: false
+   become: yes
+   tasks:
+     - name: Installing webserver on RedHat family
+       yum:
+         name: httpd
+         state: present
+       when: ansible_os_family=="RedHat"
+     - name: Installing webserver on Debian family
+       yum:
+         name: apache2
+         state: present
+       when: ansible_os_family=="Debian"
+     - name: Installing java on RedHat family
+       apt:
+         name: java-1.8.0.openjdk
+         state: present
+       when: ansible_os_family=="RedHat"
+     - name: Installing java on Debian family
+       apt:
+         name: openjdk-8-jdk
+         state: present
+       when: ansible_os_family=="Debian"  
+       
+       
+Now create the seperate task files for each of the tasks
+ 
+webserver_redhat.yml
+ ---
+  - name: Installing webserver on RedHat family
+      yum:
+        name: httpd
+        state: present
+
+webserver_debain.yml  
+---
+ - name: Installing webserver on Debian family
+     yum:
+      name: apache2
+      state: present
+ 
+javaon_redhat.yml
+--- 
+ - name: Installing java on RedHat family
+    apt:
+      name: java-1.8.0.openjdk
+      state: present
+         
+javaon_Debian.yml
+---
+ - name: Installing java on Debian family
+     apt:
+       name: openjdk-8-jdk
+       state: present
+       
+Now introducing the import ans include command task.  # These are the static tasks
+
+---
+ - name: Simple play to install multiple pkgs
+   gather_facts: false
+   become: yes
+   tasks:
+     - import_tasks: webserver_redhat.yml
+       when: ansible_os_family=="RedHat"
+     - import_tasks: webserver_debian.yml
+       when: ansible_os_family=="Debian"
+     - import_tasks: javaon_redhat.yml
+       when: ansible_os_family=="RedHat"
+     - import_tasks: javaon_debian.yml
+       when: ansible_os_family=="Debian"  
+       
+       
+       
+ Now with the include tasks  # These are the dynamic tasks.
+ 
+ ---
+ - name: Simple play to install multiple pkgs
+   gather_facts: false
+   become: yes
+   tasks:
+     - include_tasks: webserver_redhat.yml     
+       when: ansible_os_family=="RedHat"
+     - include_tasks: webserver_debian.yml
+       when: ansible_os_family=="Debian"
+     - inculde_tasks: javaon_redhat.yml
+       when: ansible_os_family=="RedHat"
+     - include_tasks: javaon_debian.yml
+       when: ansible_os_family=="Debian"  
+       
+   
+  With the dynamic variable selected accordingly the the os family is changed
+  
+   ---
+ - name: Simple play to install multiple pkgs
+   gather_facts: false
+   become: yes
+   tasks:
+     - include_tasks: webserver_{{ansible_os-family}}.yml     
+     - include_tasks: webserver_{{ansible_os_family}}.yml
+     
+-------------------------------------------------------------------------------
+Working with the Include_vars
+---
+ - name: Simple play to understand import_vars and include_vars
+   hosts: db-master
+   gather_facts:true
+   tasks:
+     - include_vars: reqiured_variable_for_{{ansible_os_family}}.yml
+     - debug:
+        msg: "pkg name={{pkg}}"
+        
+  ** required_variable_for_RedHat.yml
+   --- 
+    pkg: httpd
+    
+  ** required_variable_for_Debian.yml
+   ---
+    pkg: apache2 
