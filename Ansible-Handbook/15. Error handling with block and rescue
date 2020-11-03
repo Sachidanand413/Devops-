@@ -3,12 +3,12 @@ Error handling with ignoring errors :-
  - hosts: hostname groupnames
    gather_facts: false
    tasks:
-     - blocks:
-        - command: "ls /home/ansadmin/tomcat7"
+     - block:
+        - command: "ls /usr/local/tomcat7"     # Installed directory on the system
           register: tomcat7_out
-        - command: "ls /home/ansadmin/tomcat8"
+        - command: "ls /usr/local/tomcat8"
           register: tomcat8_out
-        - command: "ls /home/ansadmin/tomcat9"
+        - command: "ls /usr/local/tomcat9"
           register: tomcat9_out
        ignore_errors: yes
        
@@ -60,14 +60,36 @@ ADVANCE ERROR HANDLING ON THE DIFFRENT OS ENVIRONMENTS :-
    gather_facts: false
    tasks:
      - blocks:
-         - name: Finding files in home/ansadmin/tomcat8
-         - command: "ls /home/ansadmin/tomcat8"
-           register: tomcat8_out
-      rescue:
-        - debug:
+         - name: Finding files in usr/local/tomcat7
+           command: "ls /usr/local/tomcat7"
+           register: tomcat7_out
+       rescue:
+         - debug:
             msg: "The given path /home/ansadmin/tomcat8 is not valid"
-      always:
-        - debug: 
+       always:
+         - debug: 
             msg: "This will alway get executed"
             
 ------------------------------------------------------------------------------------
+[ansadmin@ip-172-31-20-26 my_working_dir]$ vi rescue_always_handling.yml
+[ansadmin@ip-172-31-20-26 my_working_dir]$ ansible-playbook rescue_always_handling.yml
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [172.31.20.26] ************************************************************
+
+TASK [Finding files in usr/local/tomcat7] **************************************
+fatal: [172.31.20.26]: FAILED! => {"ansible_facts": {"discovered_interpreter_python": "/usr/libexec/platform-python"}, "changed": true, "cmd": ["ls", "/usr/local/tomcat7"], "delta": "0:00:00.003797", "end": "2020-11-03 07:33:30.512651", "msg": "non-zero return code", "rc": 2, "start": "2020-11-03 07:33:30.508854", "stderr": "ls: cannot access '/usr/local/tomcat7': No such file or directory", "stderr_lines": ["ls: cannot access '/usr/local/tomcat7': No such file or directory"], "stdout": "", "stdout_lines": []}
+
+TASK [debug] *******************************************************************
+ok: [172.31.20.26] => {
+    "msg": "The given path usr/local/tomcat7 is not valid"
+}
+
+TASK [debug] *******************************************************************
+ok: [172.31.20.26] => {
+    "msg": "This will alway get executed"
+}
+
+PLAY RECAP *********************************************************************
+172.31.20.26               : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=1    ignored=0
