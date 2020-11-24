@@ -1,0 +1,7 @@
+$vim demo.pem
+
+Add the downloaded keygen.pem file from the aws account
+$chmod 400 demo.pem
+$ssh -i demo.pem ec2-user@10.100.1.250    // ssh -i <file-name> ec2-user@<private-ip>
+
+-------------------------------------------------------------------------------------------------------------------------------------
