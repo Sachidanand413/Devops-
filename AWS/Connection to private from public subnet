@@ -5,3 +5,8 @@ $chmod 400 demo.pem
 $ssh -i demo.pem ec2-user@10.100.1.250    // ssh -i <file-name> ec2-user@<private-ip>
 
 -------------------------------------------------------------------------------------------------------------------------------------
+Another method to get in to private instance through private key
+
+$vim private.ppk
+$chmod 700 private.ppk
+$ssh -i private.ppk ec2-user@<ip-address> 
