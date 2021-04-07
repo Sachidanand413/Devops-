@@ -1,0 +1,15 @@
+Go to the git repository of the helm where you have to download the liked version of helm for your operating system.
+Download your desired version
+Unpack it (tar -zxvf helm-v3.0.0-linux-amd64.tar.gz)
+Find the helm binary in the unpacked directory, and move it to its desired destination (mv linux-amd64/helm /usr/local/bin/helm)
+$ which helm 
+$ helm version
+$ helm version --short --client 
+# Now we gonna deploy the tiller at the K8-cluster by setting the "Service account" for tiller, "Clusterrolebinding" for the cluster-admin
+then we initiate the helm for the service account tiller
+$ kubectl -n kube-system create serviceaccount tiller
+$ kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
+$ kubectl get clusterrolebinding tiller
+$ helm init --service-account tiller
+$ helm create example-helm
+$ kubectl -n kube-system get pods
